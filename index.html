@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agendinha de Estudos</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #f0f2f5;
+  }
+  h1 {
+    color: #5C6AC4;
+    margin-bottom: 15px;
+  }
+  #container {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  #topics, #agenda {
+    background: #fff;
+    border-radius: 5px;
+    padding: 15px;
+    box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
+  }
+  #topics {
+    width: 280px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  #topics h2 {
+    margin-top: 0;
+  }
+  .topic-item {
+    margin: 5px 0;
+    padding: 6px 8px;
+    border-radius: 4px;
+    user-select: none;
+    cursor: grab;
+    color: #fff;
+  }
+  .topic-item:active {
+    cursor: grabbing;
+  }
+  /* Colors by category */
+  .matematica {
+    background: #4169e1;
+  }
+  .biologia {
+    background: #2e8b57;
+  }
+  .quimica {
+    background: #800080;
+  }
+  .fisica {
+    background: #b22222;
+  }
+  #agenda {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .day {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-height: 150px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+  .day h3 {
+    margin: 0 0 8px 0;
+    font-size: 1em;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 3px;
+    text-align: center;
+  }
+  .day-content {
+    flex: 1;
+    overflow-y: auto;
+  }
+  .day-content .topic-item {
+    margin: 4px 0;
+    border-radius: 4px;
+    padding: 4px 6px;
+    cursor: default;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+  }
+  .remove-btn {
+    color: #faa;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 10px;
+  }
+</style>
+</head>
+<body>
+<h1>Agendinha de Estudos - Arraste os conteúdos para os dias da semana</h1>
+<button id="saveBtn">Salvar Agenda</button>
+  <button id="loadBtn">Carregar Agenda</button>
+   <!-- restante do conteúdo do body -->
+  
+  <script src="script.js"></script>
+</body>
+</html>
+<div id="container">
+  <div id="topics">
+    <h2>Conteúdos</h2>
+  </div>
+  <div id="agenda"></div>
+</div>
+
+<script>
+const days = [
+  "Segunda-feira",
+  "Terça-feira",
+  "Quarta-feira",
+  "Quinta-feira",
+  "Sexta-feira",
+  "Sábado",
+  "Domingo"
+];
+
+// Conteúdos agrupados by category with category assigned
+
+// Matemática (azul)
+const mathTopics = [
+  "Números e suas operações básicas",
+  "Habilidades mentais básicas",
+  "Frações e suas propriedades",
+  "MMC, MDC e Fatoração",
+  "Potenciação e radiciação",
+  "Razão e Proporção",
+  "Porcentagem tradicional",
+  "Unidades de Medida",
+  "Gráficos e Tabelas",
+  "Escalas",
+  "Conjuntos",
+  "Estatística",
+  "Função do primeiro grau",
+  "Função do segundo grau",
+  "Progressão aritmética",
+  "Progressão geométrica",
+  "Análise combinatória",
+  "Probabilidade",
+  "Geometria plana",
+  "Geometria espacial",
+  "Trigonometria",
+  "Logaritmos",
+  "Matemática financeira",
+  "Equações",
+  "Sistemas de equações"
+].map(t => ({text: t, category: "matematica"}));
+
+// Biologia (verde)
+const bioTopics = [
+  "Bioquímica", "Citologia", "Bioenergética", "Biologia Molecular",
+  "Biotecnologia e Engenharia Genética", "Citogenética", "Ciclo Celular",
+  "Origem da Vida", "Evolução", "Genética", "Ecologia", "Problemas Ambientais",
+  "Ciclo Menstrual", "Sistema nervoso", "Sistema digestório",
+  "Sistema cardiorrespiratório", "Sistema Imunológico", "Botânica",
+  "Zoologia", "Microbiologia", "Histologia", "Sangue", "Doenças", "Drogas",
+  "Taxonomia e Classificação dos Seres Vivos", "Reprodução Humana", "Embriologia"
+].map(t => ({text: t, category: "biologia"}));
+
+// Química (roxo)
+const chemistryTopics = [
+  "Estudo da matéria", "Átomos", "Tabela Periódica", "Ligações Químicas",
+  "Funções Inorgânicas", "Radioatividade", "Estequiometria", "Soluções",
+  "Química Orgânica", "Reações Orgânicas", "Polímeros", "Isomeria",
+  "Termoquímica", "Eletroquímica", "Cinética Química",
+  "Equilíbrio Químico", "Propriedades Coligativas"
+].map(t => ({text: t, category: "quimica"}));
+
+// Física (vermelho)
+const physicsTopics = [
+  "Cinemática",
+  "Dinâmica",
+  "Ondulatória",
+  "Termologia",
+  "Estática",
+  "Quantidade de Movimento e Impulso",
+  "Trabalho e Energia",
+  "Potência e Eficiência",
+  "Gravitação",
+  "Vetores",
+  "Eletrostática",
+  "Eletrodinâmica",
+  "Hidrostática",
+  "Óptica",
+  "Eletromagnetismo"
+].map(t => ({text: t, category: "fisica"}));
+
+// Combine all contents
+const allTopics = [
+  ...mathTopics,
+  ...bioTopics,
+  ...chemistryTopics,
+  ...physicsTopics
+];
+
+// Render topics list - all draggable now
+const topicsDiv = document.getElementById("topics");
+allTopics.forEach(({text, category}) => {
+  const div = document.createElement("div");
+  div.classList.add("topic-item", category);
+  div.textContent = text;
+  div.draggable = true;
+  div.addEventListener("dragstart", dragStart);
+  topicsDiv.appendChild(div);
+});
+
+// Render agenda days
+const agendaDiv = document.getElementById("agenda");
+days.forEach(day => {
+  const dayDiv = document.createElement("div");
+  dayDiv.className = "day";
+  dayDiv.dataset.day = day;
+  dayDiv.innerHTML = `<h3>${day}</h3><div class="day-content" ondrop="drop(event)" ondragover="allowDrop(event)"></div>`;
+  agendaDiv.appendChild(dayDiv);
+});
+
+// Drag and drop handlers:
+function dragStart(event) {
+  event.dataTransfer.setData("text/plain", event.target.textContent);
+  event.dataTransfer.effectAllowed = "copy";
+}
+
+function allowDrop(event) {
+  event.preventDefault();
+  event.dataTransfer.dropEffect = "copy";
+}
+
+function drop(event) {
+  event.preventDefault();
+  const topic = event.dataTransfer.getData("text/plain");
+  if (!topic) return;
+
+  const container = event.currentTarget;
+
+  // Avoid duplicate topics inside the same day
+  const existing = Array.from(container.children).some(child => child.textContent.replace("×", "").trim() === topic);
+  if (existing) return;
+
+  // Determine category by topic text
+  let category = "";
+  for (const ctp of allTopics) {
+    if (ctp.text === topic) {
+      category = ctp.category;
+      break;
+    }
+  }
+  if (!category) category = "matematica"; // fallback
+
+  // Create a topic div inside the day-content with a remove button
+  const newTopic = document.createElement("div");
+  newTopic.className = `topic-item ${category}`;
+  newTopic.textContent = topic;
+
+  // Add a remove button
+  const removeBtn = document.createElement("span");
+  removeBtn.textContent = "×";
+  removeBtn.title = "Remover";
+  removeBtn.className = "remove-btn";
+  removeBtn.onclick = () => {
+    newTopic.remove();
+  };
+
+  newTopic.appendChild(removeBtn);
+  container.appendChild(newTopic);
+}
+</script>
+</body>
+</html>
