@@ -60,6 +60,10 @@
   .fisica {
     background: #b22222;
   }
+  .geografia {
+    background: #fff1c1;
+    color: #5a4d12
+  }
   #agenda {
     flex: 1;
     display: grid;
@@ -303,11 +307,22 @@ const physicsTopics = [
   "Eletromagnetismo"
 ].map(t => ({text: t, category: "fisica"}));
 
+const geographyTopics = [
+  "Geografia Física",
+  "Meio Ambiente e Energia",
+  "Geopolítica",
+  "Geografia Econômica",
+  "População",
+  "Industrialização e Urbanização",
+  "Geografia Agrária"
+].map(t => ({text: t, category: "geografia"}));
+
 const allTopics = [
   ...mathTopics,
   ...bioTopics,
   ...chemistryTopics,
-  ...physicsTopics
+  ...physicsTopics,
+  ...geographyTopics
 ];
 
 // Renderiza lista de conteúdos
