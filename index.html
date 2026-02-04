@@ -20,7 +20,7 @@
     gap: 15px;
     flex-wrap: wrap;
   }
-  #topics, #agenda, #monthsContainer, #radarContainer {
+  #topics, #agenda, #monthsContainer, #weekContainer, #radarContainer {
     background: #fff;
     border-radius: 5px;
     padding: 15px;
@@ -81,7 +81,7 @@
     padding-bottom: 3px;
     text-align: center;
   }
-  .day-content, .month-content {
+  .day-content, .month-content, .week-content {
     flex: 1;
     overflow-y: auto;
   }
@@ -98,7 +98,7 @@
     margin-left: 10px;
     user-select: none;
   }
-  #monthsContainer {
+  #monthsContainer, #weekContainer {
     display: none;
     margin-top: 20px;
     flex: 1;
@@ -106,6 +106,15 @@
   #monthsGrid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  #weekContainer {
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  #weekGrid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
     gap: 10px;
   }
   /* Buttons */
@@ -319,6 +328,7 @@
 <button id="saveBtn">Salvar Agenda</button>
 <button id="loadBtn">Carregar Agenda</button>
 <button id="monthBtn">Organizar por Mês</button>
+<button id="weekBtn">Organizar por Semana</button>
 <button id="radarBtn">Radar dos conteúdos</button>
 
 <div id="container">
@@ -334,6 +344,14 @@
     <h3>Organize seus conteúdos por mês</h3>
     <div id="monthsGrid">
       <!-- months dynamically generated below -->
+    </div>
+  </div>
+
+  <!-- Semana -->
+  <div id="weekContainer">
+    <h3>Organize seus conteúdos por semana</h3>
+    <div id="weekGrid">
+      <!-- Semanas -->
     </div>
   </div>
 
@@ -366,7 +384,9 @@
   <div id="editModal">
     <h3>Editar checklist para conteúdo:</h3>
     <div id="modalTitleName" style="font-weight:bold; margin-bottom:8px;"></div>
-    <textarea id="checklistText" placeholder="Escreva uma tarefa por linha. Exemplo:\nAssistir videoaula\nFazer 10 questões"></textarea>
+    <textarea id="checklistText" placeholder="Escreva uma tarefa por linha. Exemplo:
+Assistir videoaula
+Fazer 10 questões"></textarea>
     <div id="editModalButtons">
       <button id="cancelEditBtn" type="button">Cancelar</button>
       <button id="saveEditBtn" type="button">Salvar</button>
@@ -467,6 +487,17 @@ months.forEach(m => {
   monthsGrid.appendChild(monthDiv);
 });
 
+// Render semana container dynamically (same 7 days)
+const weekContainer = document.getElementById("weekContainer");
+const weekGrid = document.getElementById("weekGrid");
+days.forEach(day => {
+  const weekDayDiv = document.createElement("div");
+  weekDayDiv.className = "day";
+  weekDayDiv.dataset.day = day;
+  weekDayDiv.innerHTML = `<h3>${day}</h3><div class="week-content" ondrop="drop(event)" ondragover="allowDrop(event)"></div>`;
+  weekGrid.appendChild(weekDayDiv);
+});
+
 function renderTopicsPanel() {
   const radarData = JSON.parse(localStorage.getItem('radarData') || '{}');
   const radarTopics = new Set(Object.keys(radarData));
@@ -506,6 +537,7 @@ function getContainerType(container) {
   if (container.classList.contains("radar-content")) return "radar";
   if (container.classList.contains("day-content")) return "day";
   if (container.classList.contains("month-content")) return "month";
+  if (container.classList.contains("week-content")) return "week";
   return '';
 }
 
@@ -522,8 +554,9 @@ function drop(event) {
   if (!container.classList.contains("day-content") &&
       !container.classList.contains("month-content") &&
       !container.classList.contains("radar-content") &&
+      !container.classList.contains("week-content") &&
       container.id !== 'topics') {
-    container = container.querySelector(".day-content") || container.querySelector(".month-content") || container.querySelector(".radar-content") || container;
+    container = container.querySelector(".day-content") || container.querySelector(".month-content") || container.querySelector(".radar-content") || container.querySelector(".week-content") || container;
   }
   if (Array.from(container.children).some(child => child.textContent.replace("×", "").replace("✏️", "").trim() === topic)) return;
   let category = "";
@@ -547,6 +580,18 @@ function drop(event) {
       if(checkbox.checked) newTopic.classList.add('checked');
       else newTopic.classList.remove('checked');
     });
+    const removeBtn = document.createElement("span");
+    removeBtn.textContent = "×";
+    removeBtn.title = "Remover";
+    removeBtn.className = "remove-btn";
+    removeBtn.onclick = () => newTopic.remove();
+    newTopic.appendChild(removeBtn);
+    container.appendChild(newTopic);
+  } else if(container.classList.contains("week-content")) {
+    // Week content similar to day content, no checkbox
+    const newTopic = document.createElement("div");
+    newTopic.className = `topic-item ${category}`;
+    newTopic.textContent = topic;
     const removeBtn = document.createElement("span");
     removeBtn.textContent = "×";
     removeBtn.title = "Remover";
@@ -677,45 +722,12 @@ function renderRadarContent() {
     };
     block.appendChild(removeBtn);
 
-    // Checklist area:
-    const checklist = document.createElement('div');
-    checklist.className = 'checklist';
-    const items = radarDetails[topic] || [];
+    // Removed checklist here as per your request to show only name and edit pencil
 
-    if(items.length === 0){
-      const emptyMsg = document.createElement('em');
-      emptyMsg.style.fontSize = '13px';
-      emptyMsg.style.opacity = '0.8';
-      emptyMsg.textContent = '(sem tarefas)';
-      checklist.appendChild(emptyMsg);
-    } else {
-      items.forEach((item,i) => {
-        const label = document.createElement('label');
-        const checkbox = document.createElement('input');
-        checkbox.type = "checkbox";
-        checkbox.id = topic + '_chk_' + i;
-        const span = document.createElement('span');
-        span.textContent = item;
-        label.appendChild(checkbox);
-        label.appendChild(span);
-        checklist.appendChild(label);
-      });
-    }
-    block.appendChild(checklist);
-
-    // Collapsible logic
-    let collapsed = false;
+    // Disable collapsible toggling on click
     titleRow.style.userSelect = 'none';
-    titleRow.style.cursor = 'pointer';
-
-    titleRow.onclick = () => {
-      collapsed = !collapsed;
-      if(collapsed){
-        block.classList.add('collapsed');
-      } else {
-        block.classList.remove('collapsed');
-      }
-    };
+    titleRow.style.cursor = 'default';
+    titleRow.onclick = null;
 
     block.addEventListener('dragstart', dragStart);
     container.appendChild(block);
@@ -738,7 +750,7 @@ function saveAgenda() {
   // Days
   days.forEach(day => {
     const dayContent = document.querySelector(`.day[data-day="${day}"] .day-content`);
-    agendaData[day] = Array.from(dayContent.children).map(c => c.textContent.replace("×", "").trim());
+    agendaData[day] = dayContent ? Array.from(dayContent.children).map(c => c.textContent.replace("×", "").trim()) : [];
   });
   // Months
   months.forEach(month => {
@@ -759,6 +771,17 @@ function saveAgenda() {
       });
     }
   });
+  // Week
+  days.forEach(day => {
+    const dayDiv = document.querySelector(`.day[data-day="${day}"]`);
+    if(dayDiv){
+      const contentDiv = dayDiv.querySelector('.week-content');
+      if(contentDiv){
+        agendaData["week_" + day] = Array.from(contentDiv.children).map(c => c.textContent.replace("×", "").trim());
+      }
+    }
+  });
+
   // Radar data and details
   const radarData = JSON.parse(localStorage.getItem('radarData') || '{}');
   agendaData['radarData'] = radarData;
@@ -826,6 +849,30 @@ function loadAgenda() {
       }
     }
   });
+  // Week
+  days.forEach(day => {
+    const dayDiv = document.querySelector(`.day[data-day="${day}"]`);
+    if(dayDiv){
+      const contentDiv = dayDiv.querySelector('.week-content');
+      contentDiv.innerHTML = '';
+      const weekKey = "week_" + day;
+      if(agendaData[weekKey]){
+        agendaData[weekKey].forEach(topic => {
+          let category = allTopics.find(t => t.text === topic)?.category || 'matematica';
+          const div = document.createElement("div");
+          div.className = `topic-item ${category}`;
+          div.textContent = topic;
+          const removeBtn = document.createElement("span");
+          removeBtn.textContent = "×";
+          removeBtn.title = "Remover";
+          removeBtn.className = "remove-btn";
+          removeBtn.onclick = () => div.remove();
+          div.appendChild(removeBtn);
+          contentDiv.appendChild(div);
+        });
+      }
+    }
+  });
   // Radar data and details
   if(agendaData.radarData){
     localStorage.setItem('radarData', JSON.stringify(agendaData.radarData));
@@ -840,14 +887,17 @@ function loadAgenda() {
   renderTopicsPanel();
 }
 
-document.getElementById('saveBtn').addEventListener('click', saveAgenda);
-document.getElementById('loadBtn').addEventListener('click', () => {
-  loadAgenda();
-});
-
 // View control buttons
 document.getElementById('monthBtn').addEventListener('click', () => {
   document.getElementById('monthsContainer').style.display = 'block';
+  document.getElementById('weekContainer').style.display = 'none';
+  document.getElementById('radarContainer').style.display = 'none';
+  document.getElementById('agenda').style.display = 'none';
+  document.getElementById('topics').style.display = 'block';
+});
+document.getElementById('weekBtn').addEventListener('click', () => {
+  document.getElementById('weekContainer').style.display = 'block';
+  document.getElementById('monthsContainer').style.display = 'none';
   document.getElementById('radarContainer').style.display = 'none';
   document.getElementById('agenda').style.display = 'none';
   document.getElementById('topics').style.display = 'block';
@@ -855,6 +905,7 @@ document.getElementById('monthBtn').addEventListener('click', () => {
 document.getElementById('radarBtn').addEventListener('click', () => {
   document.getElementById('radarContainer').style.display = 'flex';
   document.getElementById('monthsContainer').style.display = 'none';
+  document.getElementById('weekContainer').style.display = 'none';
   document.getElementById('agenda').style.display = 'none';
   document.getElementById('topics').style.display = 'block';
 });
@@ -862,6 +913,7 @@ document.getElementById('radarBtn').addEventListener('click', () => {
 window.addEventListener('load', () => {
   document.getElementById('agenda').style.display = 'grid';
   document.getElementById('monthsContainer').style.display = 'none';
+  document.getElementById('weekContainer').style.display = 'none';
   document.getElementById('radarContainer').style.display = 'none';
   document.getElementById('topics').style.display = 'block';
 
@@ -869,8 +921,6 @@ window.addEventListener('load', () => {
   loadAgenda();
   renderRadarContent();
 });
-
 </script>
 </body>
 </html>
-
