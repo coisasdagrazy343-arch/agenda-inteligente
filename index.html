@@ -309,6 +309,23 @@
     padding: 8px 16px;
     font-size: 14px;
   }
+
+  /* Botões azuis para Salvar, Carregar, Organizar e Radar */
+  button {
+    background-color: #4169e1; /* azul royal */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 15px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    margin-right: 6px;
+    margin-bottom: 10px;
+  }
+  button:hover {
+    background-color: #304bbd;
+  }
 </style>
 </head>
 <body>
@@ -396,7 +413,7 @@ Fazer 10 questões"></textarea>
 const days = [
   "Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado","Domingo"
 ];
-const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"]
 
 const mathTopics = [
   "Números e suas operações básicas",
@@ -521,8 +538,10 @@ days.forEach(day => {
 function renderTopicsPanelRadar() {
   // Radar Topics: carregados do localStorage 'radarTopics'
   let radarTopics = JSON.parse(localStorage.getItem('radarTopics') || '[]');
+  // Remove duplicados com trim
+  let uniqueRadarTopics = [...new Set(radarTopics.map(t => t.trim()))];
   topicsPanels.radar.innerHTML = '<h2>Conteúdos Radar</h2>';
-  radarTopics.forEach(text => {
+  uniqueRadarTopics.forEach(text => {
     let category = allTopics.find(t => t.text === text)?.category || 'matematica';
     const div = createDraggableTopic(text, category);
     topicsPanels.radar.appendChild(div);
@@ -599,7 +618,7 @@ function drop(event) {
     // NÃO permite dropar na lista de conteúdos (fique só para pegar drag)
     return;
   }
-  else if(container.classList.contains("radar-content")){
+  else if(container.classList.contains("radar-content")) {
     const radarLevelDiv = container.closest(".radar-level");
     if(!radarLevelDiv) return;
     const level = radarLevelDiv.dataset.level;
@@ -613,7 +632,7 @@ function drop(event) {
     }
     // Remove da lista Conteúdos Radar (não da outras abas)
     let radarTopics = JSON.parse(localStorage.getItem('radarTopics') || '[]');
-    radarTopics = radarTopics.filter(t => t !== topic);
+    radarTopics = radarTopics.filter(t => t.trim() !== topic.trim());
     localStorage.setItem('radarTopics', JSON.stringify(radarTopics));
 
     renderRadarContent();
@@ -650,7 +669,7 @@ function drop(event) {
 
     // Remove da lista conteúdos mês
     let monthTopics = JSON.parse(localStorage.getItem('monthTopics') || '[]');
-    monthTopics = monthTopics.filter(t => t !== topic);
+    monthTopics = monthTopics.filter(t => t.trim() !== topic.trim());
     localStorage.setItem('monthTopics', JSON.stringify(monthTopics));
   }
   else if(container.classList.contains("week-content")) {
@@ -672,7 +691,7 @@ function drop(event) {
 
     // Remove da lista conteúdos semana
     let weekTopics = JSON.parse(localStorage.getItem('weekTopics') || '[]');
-    weekTopics = weekTopics.filter(t => t !== topic);
+    weekTopics = weekTopics.filter(t => t.trim() !== topic.trim());
     localStorage.setItem('weekTopics', JSON.stringify(weekTopics));
   }
   else if(container.classList.contains("day-content")) {
@@ -701,7 +720,7 @@ function drop(event) {
     else if(sourcePanel==='topicsWeek') storageKey = 'weekTopics';
     if(storageKey){
       let items = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      items = items.filter(t => t !== topic);
+      items = items.filter(t => t.trim() !== topic.trim());
       localStorage.setItem(storageKey, JSON.stringify(items));
       // Atualizar painel que removeu
       if(storageKey === 'radarTopics') renderTopicsPanelRadar();
@@ -786,19 +805,26 @@ function renderRadarContent() {
     removeBtn.title = 'Remover do Radar';
     removeBtn.onclick = e => {
       e.stopPropagation();
+
       let radarDataObj = JSON.parse(localStorage.getItem('radarData') || '{}');
       delete radarDataObj[topic];
       localStorage.setItem('radarData', JSON.stringify(radarDataObj));
+
       if(radarDetails[topic]){
         delete radarDetails[topic];
         localStorage.setItem('radarDetails', JSON.stringify(radarDetails));
       }
-      // Adiciona de volta na lista conteúdos Radar
+
+      // Adiciona de volta na lista conteúdos Radar sem duplicar
       let radarTopics = JSON.parse(localStorage.getItem('radarTopics') || '[]');
-      if(!radarTopics.includes(topic)) {
-        radarTopics.push(topic);
-        localStorage.setItem('radarTopics', JSON.stringify(radarTopics));
-      }
+      const normalizedTopic = topic.trim();
+      // Remove o tópico caso exista para evitar duplicação
+      radarTopics = radarTopics.filter(t => t.trim() !== normalizedTopic);
+      // Adiciona no início
+      radarTopics.unshift(normalizedTopic);
+
+      localStorage.setItem('radarTopics', JSON.stringify(radarTopics));
+
       renderRadarContent();
       renderTopicsPanelRadar();
     };
@@ -926,8 +952,6 @@ function renderAgendaContent() {
     }
   });
 }
-
-// ---------- Funções para salvar -----------
 
 function saveRadar() {
   // Salva os tópicos que estão alocados no radar nos níveis e os tópicos que ainda estão no painel Conteúdos Radar
@@ -1163,6 +1187,10 @@ function showOnly(aba){
     document.getElementById('weekContainer').style.display = 'block';
     topicsPanels.week.classList.add('active');
   }
+  else {
+    // Nenhuma aba: exibe agenda
+    agendaDiv.style.display = 'grid';
+  }
 }
 
 // Botão salvar salva só a aba atual
@@ -1180,7 +1208,7 @@ document.getElementById('saveBtn').addEventListener('click', () => {
     alert('Agenda da semana salva!');
   }
   else {
-    alert('Nenhuma aba ativa para salvar.');
+    saveAgenda();
   }
 });
 
@@ -1200,14 +1228,17 @@ document.getElementById('loadBtn').addEventListener('click', () => {
   }
 });
 
-// -------------- Ao carregar a página, mostra agenda dias da semana + conteúdos semana
+// -------------- Ao carregar a página, mostra organizar por semana já ativo e conteúdos semana
 window.addEventListener('load', () => {
-  agendaDiv.style.display = 'grid';
-  showOnly(null);
-  loadAgenda();
-  
+  // Mostrar só a aba semana já ativa
+  showOnly('week');
+  loadWeek();
+
   // Inicializa listas conteúdos para cada aba (se não existir, cria completo)
   initTopicsLists();
+
+  // Agenda só carrega quando escolher
+  agendaDiv.style.display = 'none';
 });
 
 function initTopicsLists(){
