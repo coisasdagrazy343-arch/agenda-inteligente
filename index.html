@@ -19,7 +19,7 @@
     gap: 15px;
     flex-wrap: wrap;
   }
-  #topics, #agenda, #monthsContainer {
+  #topics, #agenda, #monthsContainer, #radarContainer {
     background: #fff;
     border-radius: 5px;
     padding: 15px;
@@ -62,7 +62,19 @@
   }
   .geografia {
     background: #fff1c1;
-    color: #5a4d12
+    color: #5a4d12;
+  }
+  .historia {
+    background: #ffd18c;
+    color: #5a4d12;
+  }
+  .portugues {
+    background: #f9d5e5;
+    color: #6a1b4d;
+  }
+  .filosofia-sociologia-literatura {
+    background: #cde7f0;
+    color: #1a4e7a;
   }
   #agenda {
     flex: 1;
@@ -139,7 +151,6 @@
     cursor: pointer;
     width: 18px;
     height: 18px;
-    /* Simple scale animation on click */
     transition: transform 0.2s ease;
   }
   .month-content .topic-item input.month-check:checked {
@@ -158,24 +169,123 @@
   .month-content .topic-item.checked span {
     text-decoration: line-through;
   }
+  /* Radar dos conteúdos - níveis (cores texto) */
+  .radar-0 {
+    color: #721c24 !important;
+  }
+  .radar-1 {
+    color: #856404 !important;
+  }
+  .radar-2 {
+    color: #0c5460 !important;
+  }
+  .radar-3 {
+    color: #155724 !important;
+  }
+  /* Radar container styling */
+  #radarContainer {
+    display: none;
+    margin: 0;
+    padding: 15px;
+    background: #fff;
+    border-radius: 5px;
+    flex: 1;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
+  }
+  #radarLevels {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    height: 100%;
+  }
+  .radar-level {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    min-height: 400px;
+    max-height: 650px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    color: inherit;
+  }
+  .radar-level strong {
+    font-size: 1em;
+    margin-bottom: 8px;
+    user-select: none;
+    color: #333;
+  }
+  .radar-level .topic-item {
+    user-select: none;
+    cursor: default;
+    margin-bottom: 4px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .radar-level .topic-item.matematica {
+    background: #4169e1;
+    color: #fff !important;
+  }
+  .radar-level .topic-item.biologia {
+    background: #2e8b57;
+    color: #fff !important;
+  }
+  .radar-level .topic-item.quimica {
+    background: #800080;
+    color: #fff !important;
+  }
+  .radar-level .topic-item.fisica {
+    background: #b22222;
+    color: #fff !important;
+  }
+  .radar-level .topic-item.geografia {
+    background: #fff1c1;
+    color: #5a4d12 !important;
+  }
+  .radar-level .topic-item.historia {
+    background: #ffd18c;
+    color: #5a4d12 !important;
+  }
+  .radar-level .topic-item.portugues {
+    background: #f9d5e5;
+    color: #6a1b4d !important;
+  }
+  .radar-level .topic-item.filosofia-sociologia-literatura {
+    background: #cde7f0;
+    color: #1a4e7a !important;
+  }
+  .radar-level .topic-item .remove-btn {
+    color: #d44;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 10px;
+  }
 </style>
 </head>
 <body>
-<h1>Agendinha de Estudos - Arraste os conteúdos para os dias da semana ou para os meses</h1>
+<h1>Agendinha de Estudos - Arraste os conteúdos</h1>
 
 <button id="saveBtn">Salvar Agenda</button>
 <button id="loadBtn">Carregar Agenda</button>
 <button id="monthBtn">Organizar por Mês</button>
+<button id="radarBtn">Radar dos conteúdos</button>
 
 <div id="container">
   <div id="topics">
     <h2>Conteúdos</h2>
   </div>
 
-  <!-- Agenda dias da semana -->
+  <!-- Dias da semana -->
   <div id="agenda"></div>
 
-  <!-- Agenda por meses -->
+  <!-- Meses -->
   <div id="monthsContainer">
     <h3>Organize seus conteúdos por mês</h3>
     <div id="monthsGrid">
@@ -229,6 +339,29 @@
       </div>
     </div>
   </div>
+
+  <!-- Radar substitui agenda -->
+  <div id="radarContainer">
+    <div id="radarLevels">
+      <div class="radar-level" data-level="0" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <strong>Nunca estudei</strong>
+        <div class="radar-content"></div>
+      </div>
+      <div class="radar-level" data-level="1" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <strong>Já estudei mas não entendi muito a teoria/tenho muitas lacunas e não sei fazer os exercícios</strong>
+        <div class="radar-content"></div>
+      </div>
+      <div class="radar-level" data-level="2" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <strong>Já estudei toda a teoria mas erro muitos exercícios</strong>
+        <div class="radar-content"></div>
+      </div>
+      <div class="radar-level" data-level="3" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <strong>Domino</strong>
+        <div class="radar-content"></div>
+      </div>
+    </div>
+    <button id="radarClearBtn" style="margin-top: 15px;">Limpar Radar</button>
+  </div>
 </div>
 
 <script>
@@ -242,7 +375,6 @@ const days = [
   "Domingo"
 ];
 
-// Categorias e conteúdos
 const mathTopics = [
   "Números e suas operações básicas",
   "Habilidades mentais básicas",
@@ -317,12 +449,43 @@ const geographyTopics = [
   "Geografia Agrária"
 ].map(t => ({text: t, category: "geografia"}));
 
+const historyTopics = [
+  "Brasil Colônia",
+  "Brasil Império",
+  "Brasil República",
+  "Civilização pré-colombiana",
+  "Pré-história",
+  "Antiguidade",
+  "Idade média",
+  "Idade moderna",
+  "Idade contemporânea"
+].map(t => ({ text: t, category: "historia" }));
+
+const portuguesTopics = [
+  "Funções da linguagem",
+  "Figuras da linguagem",
+  "Variações linguísticas",
+  "Campanhas publicitárias",
+  "Gêneros e tipos textuais",
+  "Interpretação de Texto",
+  "Poemas"
+].map(t => ({text: t, category: "portugues"}));
+
+const filosofiaSociologiaLiteraturaTopics = [
+  "Filosofia",
+  "Sociologia",
+  "Literatura"
+].map(t => ({text: t, category: "filosofia-sociologia-literatura"}));
+
 const allTopics = [
   ...mathTopics,
   ...bioTopics,
   ...chemistryTopics,
   ...physicsTopics,
-  ...geographyTopics
+  ...geographyTopics,
+  ...historyTopics,
+  ...portuguesTopics,
+  ...filosofiaSociologiaLiteraturaTopics 
 ];
 
 // Renderiza lista de conteúdos
@@ -362,8 +525,8 @@ function drop(event) {
   if (!topic) return;
 
   let container = event.currentTarget;
-  if (!container.classList.contains("day-content") && !container.classList.contains("month-content")) {
-    container = container.querySelector(".day-content") || container.querySelector(".month-content") || container;
+  if (!container.classList.contains("day-content") && !container.classList.contains("month-content") && !container.classList.contains("radar-content")) {
+    container = container.querySelector(".day-content") || container.querySelector(".month-content") || container.querySelector(".radar-content") || container;
   }
 
   // Evita duplicatas
@@ -399,7 +562,6 @@ function drop(event) {
     newTopic.appendChild(checkbox);
     newTopic.appendChild(spanText);
 
-    // Atualiza estilo ao clicar checkbox
     checkbox.addEventListener('change', () => {
       if(checkbox.checked) {
         newTopic.classList.add('checked');
@@ -408,46 +570,74 @@ function drop(event) {
       }
     });
   } else {
-    // dia: só texto
+    // dia ou radar: só texto
     newTopic.textContent = topic;
   }
 
-  const removeBtn = document.createElement("span");
-  removeBtn.textContent = "×";
-  removeBtn.title = "Remover";
-  removeBtn.className = "remove-btn";
-  removeBtn.onclick = () => {
-    newTopic.remove();
-  };
+  // botão remover em radar também
+  if(container.classList.contains('radar-content')) {
+    const removeBtn = document.createElement("span");
+    removeBtn.textContent = "×";
+    removeBtn.title = "Remover";
+    removeBtn.className = "remove-btn";
+    removeBtn.onclick = () => {
+      let radarData = JSON.parse(localStorage.getItem('radarData') || '{}');
+      delete radarData[topic];
+      localStorage.setItem('radarData', JSON.stringify(radarData));
+      renderRadarContent();
+    };
+    newTopic.appendChild(removeBtn);
+  } else {
+    const removeBtn = document.createElement("span");
+    removeBtn.textContent = "×";
+    removeBtn.title = "Remover";
+    removeBtn.className = "remove-btn";
+    removeBtn.onclick = () => { newTopic.remove(); };
+    newTopic.appendChild(removeBtn);
+  }
 
-  newTopic.appendChild(removeBtn);
   container.appendChild(newTopic);
+
+  updateRadarMarks();
 }
 
 const monthBtn = document.getElementById('monthBtn');
 const monthsContainer = document.getElementById('monthsContainer');
 const agenda = document.getElementById('agenda');
+const radarContainer = document.getElementById('radarContainer');
 
 monthBtn.addEventListener('click', () => {
   if (monthsContainer.style.display === 'none' || monthsContainer.style.display === '') {
     monthsContainer.style.display = 'block';
     agenda.style.display = 'none';
+    radarContainer.style.display = 'none';
   } else {
     monthsContainer.style.display = 'none';
+    agenda.style.display = 'grid';
+    radarContainer.style.display = 'none';
+  }
+});
+
+const radarBtn = document.getElementById('radarBtn');
+radarBtn.addEventListener('click', () => {
+  if (radarContainer.style.display === 'none' || radarContainer.style.display === '') {
+    radarContainer.style.display = 'flex';
+    agenda.style.display = 'none';
+    monthsContainer.style.display = 'none';
+  } else {
+    radarContainer.style.display = 'none';
     agenda.style.display = 'grid';
   }
 });
 
 function saveAgenda() {
   const agendaData = {};
-  // Salvar dias da semana
   days.forEach(day => {
     const dayContent = document.querySelector(`.day[data-day="${day}"] .day-content`);
     agendaData[day] = Array.from(dayContent.children)
       .map(c => c.textContent.replace("×", "").trim());
   });
 
-  // Salvar meses com checkbox states
   const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
   months.forEach(month => {
     const monthContent = Array.from(document.querySelectorAll('.month')).find(m => m.dataset.month === month);
@@ -468,14 +658,15 @@ function saveAgenda() {
     }
   });
 
+  const radarData = JSON.parse(localStorage.getItem('radarData') || '{}');
+  agendaData['radarData'] = radarData;
+
   localStorage.setItem('agendaData', JSON.stringify(agendaData));
   alert('Agenda salva com sucesso!');
 }
 
 function loadAgenda() {
   const agendaData = JSON.parse(localStorage.getItem('agendaData') || '{}');
-
-  // Carregar dias da semana
   days.forEach(day => {
     const dayContent = document.querySelector(`.day[data-day="${day}"] .day-content`);
     dayContent.innerHTML = '';
@@ -508,7 +699,6 @@ function loadAgenda() {
     }
   });
 
-  // Carregar meses com checkbox e aplicar classe checked
   const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
   months.forEach(month => {
     const monthContent = Array.from(document.querySelectorAll('.month')).find(m => m.dataset.month === month);
@@ -543,7 +733,6 @@ function loadAgenda() {
 
           if(done) newTopic.classList.add('checked');
 
-          // Atualiza estilo ao clicar checkbox
           checkbox.addEventListener('change', () => {
             if(checkbox.checked) {
               newTopic.classList.add('checked');
@@ -566,7 +755,79 @@ function loadAgenda() {
       }
     }
   });
+
+  if (agendaData.radarData) {
+    localStorage.setItem('radarData', JSON.stringify(agendaData.radarData));
+  }
+  renderRadarContent();
+  updateRadarMarks();
 }
+
+function renderRadarContent() {
+  let radarData = JSON.parse(localStorage.getItem('radarData') || '{}');
+  document.querySelectorAll('#radarLevels .radar-content').forEach(div => div.innerHTML = '');
+
+  Object.entries(radarData).forEach(([topic, level]) => {
+    const container = document.querySelector(`#radarLevels .radar-level[data-level="${level}"] .radar-content`);
+    if (!container) return;
+
+    // Busca categoria para aplicar cor
+    const category = allTopics.find(t => t.text === topic)?.category || "matematica";
+
+    const div = document.createElement('div');
+    div.className = `topic-item ${category}`;
+    div.textContent = topic;
+
+    // Botão remover para itens do radar
+    const removeBtn = document.createElement("span");
+    removeBtn.textContent = "×";
+    removeBtn.title = "Remover";
+    removeBtn.className = "remove-btn";
+    removeBtn.onclick = () => {
+      let radarData = JSON.parse(localStorage.getItem('radarData') || '{}');
+      delete radarData[topic];
+      localStorage.setItem('radarData', JSON.stringify(radarData));
+      renderRadarContent();
+    };
+    div.appendChild(removeBtn);
+
+    container.appendChild(div);
+  });
+}
+
+document.getElementById('radarClearBtn').addEventListener('click', () => {
+  if(confirm('Tem certeza que deseja limpar todos os dados do Radar?')) {
+    localStorage.removeItem('radarData');
+    renderRadarContent();
+  }
+});
+
+function updateRadarMarks() {
+  let radarData = JSON.parse(localStorage.getItem('radarData') || '{}');
+  document.querySelectorAll('.month-content .topic-item').forEach(item => {
+    const span = item.querySelector('span');
+    if (!span) return;
+    const text = span.textContent;
+    item.classList.remove('radar-0','radar-1','radar-2','radar-3');
+    item.title = '';
+    if (radarData[text] !== undefined) {
+      item.classList.add('radar-' + radarData[text]);
+      const descriptions = {
+        '0': 'Nunca estudei',
+        '1': 'Já estudei mas não entendi muito a teoria/tenho muitas lacunas e não sei fazer os exercícios',
+        '2': 'Já estudei toda a teoria mas erro muitos exercícios',
+        '3': 'Domino'
+      };
+      item.title = descriptions[radarData[text]];
+    }
+  });
+}
+
+window.addEventListener('load', () => {
+  loadAgenda();
+  renderRadarContent();
+  updateRadarMarks();
+});
 
 document.getElementById('saveBtn').addEventListener('click', saveAgenda);
 document.getElementById('loadBtn').addEventListener('click', loadAgenda);
