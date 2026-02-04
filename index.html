@@ -221,7 +221,7 @@
   }
   .radar-level .topic-item {
     user-select: none;
-    cursor: default;
+    cursor: grab;
     margin-bottom: 4px;
     padding: 4px 6px;
     border-radius: 4px;
@@ -488,16 +488,30 @@ const allTopics = [
   ...filosofiaSociologiaLiteraturaTopics 
 ];
 
-// Renderiza lista de conteúdos
+// Renderiza lista de conteúdos no container de conteúdos (todos menos os do radar)
 const topicsDiv = document.getElementById("topics");
-allTopics.forEach(({text, category}) => {
-  const div = document.createElement("div");
-  div.classList.add("topic-item", category);
-  div.textContent = text;
-  div.draggable = true;
-  div.addEventListener("dragstart", dragStart);
-  topicsDiv.appendChild(div);
-});
+
+// Função para renderizar os conteúdos restantes (fora do radar) no painel de conteúdos
+function renderTopicsPanel() {
+  // Recupera todos os tópicos que estão no radar
+  const radarData = JSON.parse(localStorage.getItem('radarData') || '{}');
+  const radarTopics = new Set(Object.keys(radarData));
+
+  // Limpa a div antes de renderizar
+  // Porém mantém o título h2 no topo
+  topicsDiv.querySelectorAll('.topic-item').forEach(item => item.remove());
+
+  allTopics.forEach(({text, category}) => {
+    if (!radarTopics.has(text)) { // só adiciona se não estiver no radar
+      const div = document.createElement("div");
+      div.classList.add("topic-item", category);
+      div.textContent = text;
+      div.draggable = true;
+      div.addEventListener("dragstart", dragStart);
+      topicsDiv.appendChild(div);
+    }
+  });
+}
 
 // Renderiza agenda dos dias da semana
 const agendaDiv = document.getElementById("agenda");
@@ -510,8 +524,26 @@ days.forEach(day => {
 });
 
 function dragStart(event) {
-  event.dataTransfer.setData("text/plain", event.target.textContent);
-  event.dataTransfer.effectAllowed = "copy";
+  const el = event.target;
+  event.dataTransfer.setData("text/plain", el.textContent);
+  event.dataTransfer.effectAllowed = "copyMove";
+
+  // Save source container id/type to differentiate the move
+  event.dataTransfer.setData("source-type", getContainerType(el.parentElement));
+
+  // Save serialized element HTML for recreating if need be
+  event.dataTransfer.setData("source-html", el.outerHTML);
+}
+
+// Helper: identify container type where drag started (topics, radar-content, day-content, month-content)
+function getContainerType(container) {
+  if (!container) return '';
+
+  if (container.id === "topics") return "topics";
+  if (container.classList.contains("radar-content")) return "radar";
+  if (container.classList.contains("day-content")) return "day";
+  if (container.classList.contains("month-content")) return "month";
+  return '';
 }
 
 function allowDrop(event) {
@@ -525,18 +557,22 @@ function drop(event) {
   if (!topic) return;
 
   let container = event.currentTarget;
-  if (!container.classList.contains("day-content") && !container.classList.contains("month-content") && !container.classList.contains("radar-content")) {
+  // If drop target is not directly content container, find its content container inside
+  if (!container.classList.contains("day-content")
+      && !container.classList.contains("month-content")
+      && !container.classList.contains("radar-content")
+      && container.id !== 'topics') {
     container = container.querySelector(".day-content") || container.querySelector(".month-content") || container.querySelector(".radar-content") || container;
   }
 
-  // Evita duplicatas
+  // Avoid duplicates in target container
   const existing = Array.from(container.children).some(child => {
     const textOnly = child.textContent.replace("×", "").trim();
     return textOnly === topic;
   });
   if (existing) return;
 
-  // Categoria
+  // Find category of the dragged topic
   let category = "";
   for (const ctp of allTopics) {
     if (ctp.text === topic) {
@@ -546,11 +582,22 @@ function drop(event) {
   }
   if (!category) category = "matematica";
 
-  const newTopic = document.createElement("div");
-  newTopic.className = `topic-item ${category}`;
+  // Identify source container type
+  const sourceType = event.dataTransfer.getData("source-type");
+  // Get html of dragged element to preserve structure when moving from radar
+  const sourceHTML = event.dataTransfer.getData("source-html");
 
-  if (container.classList.contains("month-content")) {
-    // checkbox no mês
+  if(container.id === "topics") {
+    // Only allow drop if source is NOT topics (can't drop to topics... topics is source from radar removal)
+    // So no do nothing here.
+    return;
+  }
+
+  if(container.classList.contains("month-content")) {
+    // Month container: create with checkbox and span
+    const newTopic = document.createElement("div");
+    newTopic.className = `topic-item ${category}`;
+
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.className = "month-check";
@@ -569,36 +616,77 @@ function drop(event) {
         newTopic.classList.remove('checked');
       }
     });
-  } else {
-    // dia ou radar: só texto
-    newTopic.textContent = topic;
-  }
 
-  // botão remover em radar também
-  if(container.classList.contains('radar-content')) {
     const removeBtn = document.createElement("span");
     removeBtn.textContent = "×";
     removeBtn.title = "Remover";
     removeBtn.className = "remove-btn";
     removeBtn.onclick = () => {
-      let radarData = JSON.parse(localStorage.getItem('radarData') || '{}');
-      delete radarData[topic];
-      localStorage.setItem('radarData', JSON.stringify(radarData));
-      renderRadarContent();
+      newTopic.remove();
     };
     newTopic.appendChild(removeBtn);
-  } else {
+
+    container.appendChild(newTopic);
+  } else if(container.classList.contains("radar-content")) {
+    // Radar container: moving an element to radar level means update radarData,
+    // then rerender radarContent and topics panel.
+    // The dropped element should come from topics panel or other radar-level.
+
+    // Get level from radar-level container
+    const radarLevelDiv = container.closest(".radar-level");
+    if(!radarLevelDiv) return;
+    const level = radarLevelDiv.dataset.level;
+
+    // Update radar data
+    let radarData = JSON.parse(localStorage.getItem('radarData') || '{}');
+    radarData[topic] = parseInt(level);
+
+    // Save radar data
+    localStorage.setItem('radarData', JSON.stringify(radarData));
+
+    // Refresh radar and topics panel
+    renderRadarContent();
+    renderTopicsPanel();
+    updateRadarMarks();
+
+  } else if(container.classList.contains("day-content")) {
+    // Day container: simple div with text and remove button
+    const newTopic = document.createElement("div");
+    newTopic.className = `topic-item ${category}`;
+    newTopic.textContent = topic;
+
     const removeBtn = document.createElement("span");
     removeBtn.textContent = "×";
     removeBtn.title = "Remover";
     removeBtn.className = "remove-btn";
     removeBtn.onclick = () => { newTopic.remove(); };
     newTopic.appendChild(removeBtn);
+
+    container.appendChild(newTopic);
   }
 
-  container.appendChild(newTopic);
-
-  updateRadarMarks();
+  // Remove the dragged element from original container if "move" effect
+  if (sourceType === "radar") {
+    // From radar: remove from radarData, then rerender topics and radar
+    let radarData = JSON.parse(localStorage.getItem('radarData') || '{}');
+    if (radarData.hasOwnProperty(topic)) {
+      delete radarData[topic];
+      localStorage.setItem('radarData', JSON.stringify(radarData));
+      renderRadarContent();
+      renderTopicsPanel();
+      updateRadarMarks();
+    }
+  }
+  else if (sourceType === "topics") {
+    // From topics container, remove the original element after drop 
+    // since topics panel is recreated by renderTopicsPanel(), just remove dragged element here.
+    // But handle possibility of fast dragging, no precise element to remove from DOM.
+    // Just rerender topics panel to be safe.
+    renderTopicsPanel();
+  }
+  else {
+    // Other source - e.g. day, month - no remove from source (copy)
+  }
 }
 
 const monthBtn = document.getElementById('monthBtn');
@@ -759,7 +847,9 @@ function loadAgenda() {
   if (agendaData.radarData) {
     localStorage.setItem('radarData', JSON.stringify(agendaData.radarData));
   }
+
   renderRadarContent();
+  renderTopicsPanel();
   updateRadarMarks();
 }
 
@@ -777,6 +867,8 @@ function renderRadarContent() {
     const div = document.createElement('div');
     div.className = `topic-item ${category}`;
     div.textContent = topic;
+    div.draggable = true;
+    div.addEventListener("dragstart", dragStart);
 
     // Botão remover para itens do radar
     const removeBtn = document.createElement("span");
@@ -788,6 +880,8 @@ function renderRadarContent() {
       delete radarData[topic];
       localStorage.setItem('radarData', JSON.stringify(radarData));
       renderRadarContent();
+      renderTopicsPanel();
+      updateRadarMarks();
     };
     div.appendChild(removeBtn);
 
@@ -799,6 +893,8 @@ document.getElementById('radarClearBtn').addEventListener('click', () => {
   if(confirm('Tem certeza que deseja limpar todos os dados do Radar?')) {
     localStorage.removeItem('radarData');
     renderRadarContent();
+    renderTopicsPanel();
+    updateRadarMarks();
   }
 });
 
@@ -824,13 +920,19 @@ function updateRadarMarks() {
 }
 
 window.addEventListener('load', () => {
+  renderTopicsPanel();
   loadAgenda();
   renderRadarContent();
   updateRadarMarks();
 });
 
 document.getElementById('saveBtn').addEventListener('click', saveAgenda);
-document.getElementById('loadBtn').addEventListener('click', loadAgenda);
+document.getElementById('loadBtn').addEventListener('click', () => {
+  loadAgenda();
+  renderTopicsPanel();
+  renderRadarContent();
+  updateRadarMarks();
+});
 </script>
 </body>
 </html>
