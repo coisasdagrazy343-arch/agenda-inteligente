@@ -1,560 +1,555 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Agendinha de Estudos</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    padding: 20px;
-    background: #f0f2f5;
-  }
-  h1 {
-    color: #5C6AC4;
-    margin-bottom: 15px;
-  }
-  #container {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-  }
-  #topics, #agenda, #monthsContainer {
-    background: #fff;
-    border-radius: 5px;
-    padding: 15px;
-    box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
-  }
-  #topics {
-    width: 280px;
-    max-height: 80vh;
-    overflow-y: auto;
-  }
-  #topics h2 {
-    margin-top: 0;
-  }
-  .topic-item {
-    margin: 5px 0;
-    padding: 6px 8px;
-    border-radius: 4px;
-    user-select: none;
-    cursor: grab;
-    color: #fff;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .topic-item:active {
-    cursor: grabbing;
-  }
-  /* Colors by category */
-  .matematica {
-    background: #4169e1;
-  }
-  .biologia {
-    background: #2e8b57;
-  }
-  .quimica {
-    background: #800080;
-  }
-  .fisica {
-    background: #b22222;
-  }
-  #agenda {
-    flex: 1;
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-    max-height: 80vh;
-    overflow-y: auto;
-  }
-  .day, .month {
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    min-height: 150px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-  }
-  .day h3, .month h4 {
-    margin: 0 0 8px 0;
-    font-size: 1em;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 3px;
-    text-align: center;
-  }
-  .day-content, .month-content {
-    flex: 1;
-    overflow-y: auto;
-  }
-  .day-content .topic-item, .month-content .topic-item {
-    margin: 4px 0;
-    border-radius: 4px;
-    padding: 4px 6px;
-    cursor: default;
-  }
-  .remove-btn {
-    color: #faa;
-    font-weight: bold;
-    cursor: pointer;
-    margin-left: 10px;
-  }
-  #monthsContainer {
-    display: none;
-    margin-top: 20px;
-    flex: 1;
-  }
-  #monthsGrid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-  }
-  /* Buttons */
-  button {
-    margin-right: 8px;
-    padding: 7px 14px;
-    border: none;
-    background-color: #5C6AC4;
-    color: white;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  button:hover {
-    background-color: #4a54a1;
-  }
-  /* Checkbox and span layout in month topics */
-  .month-content .topic-item {
-    cursor: default;
-    display: flex !important;
-    align-items: center;
-    transition: background-color 0.25s ease, opacity 0.25s ease;
-  }
-  .month-content .topic-item input.month-check {
-    margin-right: 8px;
-    cursor: pointer;
-    width: 18px;
-    height: 18px;
-    /* Simple scale animation on click */
-    transition: transform 0.2s ease;
-  }
-  .month-content .topic-item input.month-check:checked {
-    animation: checkScale 0.3s ease forwards;
-  }
-  @keyframes checkScale {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.3); }
-    100% { transform: scale(1); }
-  }
-  .month-content .topic-item.checked {
-    opacity: 0.6;
-    background-color: #222;
-    color: #bbb;
-  }
-  .month-content .topic-item.checked span {
-    text-decoration: line-through;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agendinha de Estudos</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f0f2f5;
+    }
+    h1 {
+      color: #5C6AC4;
+      margin-bottom: 15px;
+    }
+    #container {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    #topics, #agenda, #monthsContainer {
+      background: #fff;
+      border-radius: 5px;
+      padding: 15px;
+      box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
+    }
+    #topics {
+      width: 280px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    #topics h2 {
+      margin-top: 0;
+    }
+    .topic-item {
+      margin: 5px 0;
+      padding: 6px 8px;
+      border-radius: 4px;
+      user-select: none;
+      cursor: grab;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .topic-item:active {
+      cursor: grabbing;
+    }
+    /* Colors by category */
+    .matematica { background: #4169e1; }
+    .biologia { background: #2e8b57; }
+    .quimica { background: #800080; }
+    .fisica { background: #b22222; }
+    .geografia { background: #4682b4; }
+    .historia { background: #d2691e; }
+    .portugues { background: #ff8c00; }
+    .filosofia-sociologia-literatura { background: #708090; }
+
+    #agenda {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .day, .month {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      min-height: 150px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+    .day h3, .month h4 {
+      margin: 0 0 8px 0;
+      font-size: 1em;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 3px;
+      text-align: center;
+    }
+    .day-content, .month-content {
+      flex: 1;
+      overflow-y: auto;
+    }
+    .day-content .topic-item, .month-content .topic-item {
+      margin: 4px 0;
+      border-radius: 4px;
+      padding: 4px 6px;
+      cursor: default;
+    }
+    .remove-btn {
+      color: #faa;
+      font-weight: bold;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    #monthsContainer {
+      display: none;
+      margin-top: 20px;
+      flex: 1;
+    }
+    #monthsGrid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    /* Buttons */
+    button {
+      margin-right: 8px;
+      padding: 7px 14px;
+      border: none;
+      background-color: #5C6AC4;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #4a54a1;
+    }
+    /* Checkbox and span layout in month topics */
+    .month-content .topic-item {
+      cursor: default;
+      display: flex !important;
+      align-items: center;
+      transition: background-color 0.25s ease, opacity 0.25s ease;
+      color: white;
+    }
+    .month-content .topic-item input.month-check {
+      margin-right: 8px;
+      cursor: pointer;
+      width: 18px;
+      height: 18px;
+      transition: transform 0.2s ease;
+      flex-shrink: 0;
+    }
+    .month-content .topic-item input.month-check:checked {
+      animation: checkScale 0.3s ease forwards;
+    }
+    @keyframes checkScale {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+    .month-content .topic-item.checked {
+      opacity: 0.6;
+      background-color: #333; /* menos escuro que antes para melhor leitura */
+      color: #bbb;
+    }
+    .month-content .topic-item.checked span {
+      text-decoration: line-through;
+    }
+  </style>
 </head>
 <body>
-<h1>Agendinha de Estudos - Arraste os conteúdos para os dias da semana ou para os meses</h1>
+  <h1>Agendinha de Estudos - Arraste os conteúdos para os dias da semana ou para os meses</h1>
 
-<button id="saveBtn">Salvar Agenda</button>
-<button id="loadBtn">Carregar Agenda</button>
-<button id="monthBtn">Organizar por Mês</button>
+  <button id="saveBtn" aria-label="Salvar agenda">Salvar Agenda</button>
+  <button id="loadBtn" aria-label="Carregar agenda">Carregar Agenda</button>
+  <button id="monthBtn" aria-label="Alternar visualização por mês">Organizar por Mês</button>
 
-<div id="container">
-  <div id="topics">
-    <h2>Conteúdos</h2>
-  </div>
+  <div id="container">
+    <div id="topics" aria-label="Lista de conteúdos para estudo">
+      <h2>Conteúdos</h2>
+    </div>
 
-  <!-- Agenda dias da semana -->
-  <div id="agenda"></div>
+    <!-- Agenda dias da semana -->
+    <div id="agenda" role="list" aria-label="Agenda semanal"></div>
 
-  <!-- Agenda por meses -->
-  <div id="monthsContainer">
-    <h3>Organize seus conteúdos por mês</h3>
-    <div id="monthsGrid">
-      <div class="month" data-month="Janeiro" ondrop="drop(event)" ondragover="allowDrop(event)">
-        <h4>Janeiro</h4>
-        <div class="month-content"></div>
-      </div>
-      <div class="month" data-month="Fevereiro" ondrop="drop(event)" ondragover="allowDrop(event)">
-        <h4>Fevereiro</h4>
-        <div class="month-content"></div>
-      </div>
-      <div class="month" data-month="Março" ondrop="drop(event)" ondragover="allowDrop(event)">
-        <h4>Março</h4>
-        <div class="month-content"></div>
-      </div>
-      <div class="month" data-month="Abril" ondrop="drop(event)" ondragover="allowDrop(event)">
-        <h4>Abril</h4>
-        <div class="month-content"></div>
-      </div>
-      <div class="month" data-month="Maio" ondrop="drop(event)" ondragover="allowDrop(event)">
-        <h4>Maio</h4>
-        <div class="month-content"></div>
-      </div>
-      <div class="month" data-month="Junho" ondrop="drop(event)" ondragover="allowDrop(event)">
-        <h4>Junho</h4>
-        <div class="month-content"></div>
-      </div>
-      <div class="month" data-month="Julho" ondrop="drop(event)" ondragover="allowDrop(event)">
-        <h4>Julho</h4>
-        <div class="month-content"></div>
-      </div>
-      <div class="month" data-month="Agosto" ondrop="drop(event)" ondragover="allowDrop(event)">
-        <h4>Agosto</h4>
-        <div class="month-content"></div>
-      </div>
-      <div class="month" data-month="Setembro" ondrop="drop(event)" ondragover="allowDrop(event)">
-        <h4>Setembro</h4>
-        <div class="month-content"></div>
-      </div>
-      <div class="month" data-month="Outubro" ondrop="drop(event)" ondragover="allowDrop(event)">
-        <h4>Outubro</h4>
-        <div class="month-content"></div>
-      </div>
-      <div class="month" data-month="Novembro" ondrop="drop(event)" ondragover="allowDrop(event)">
-        <h4>Novembro</h4>
-        <div class="month-content"></div>
-      </div>
-      <div class="month" data-month="Dezembro" ondrop="drop(event)" ondragover="allowDrop(event)">
-        <h4>Dezembro</h4>
-        <div class="month-content"></div>
+    <!-- Agenda por meses -->
+    <div id="monthsContainer" role="list" aria-label="Agenda mensal">
+      <h3>Organize seus conteúdos por mês</h3>
+      <div id="monthsGrid">
+        <!-- meses inseridos dinamicamente ou já no HTML -->
+        <div class="month" data-month="Janeiro" ondrop="drop(event)" ondragover="allowDrop(event)">
+          <h4>Janeiro</h4>
+          <div class="month-content"></div>
+        </div>
+        <div class="month" data-month="Fevereiro" ondrop="drop(event)" ondragover="allowDrop(event)">
+          <h4>Fevereiro</h4>
+          <div class="month-content"></div>
+        </div>
+        <div class="month" data-month="Março" ondrop="drop(event)" ondragover="allowDrop(event)">
+          <h4>Março</h4>
+          <div class="month-content"></div>
+        </div>
+        <div class="month" data-month="Abril" ondrop="drop(event)" ondragover="allowDrop(event)">
+          <h4>Abril</h4>
+          <div class="month-content"></div>
+        </div>
+        <div class="month" data-month="Maio" ondrop="drop(event)" ondragover="allowDrop(event)">
+          <h4>Maio</h4>
+          <div class="month-content"></div>
+        </div>
+        <div class="month" data-month="Junho" ondrop="drop(event)" ondragover="allowDrop(event)">
+          <h4>Junho</h4>
+          <div class="month-content"></div>
+        </div>
+        <div class="month" data-month="Julho" ondrop="drop(event)" ondragover="allowDrop(event)">
+          <h4>Julho</h4>
+          <div class="month-content"></div>
+        </div>
+        <div class="month" data-month="Agosto" ondrop="drop(event)" ondragover="allowDrop(event)">
+          <h4>Agosto</h4>
+          <div class="month-content"></div>
+        </div>
+        <div class="month" data-month="Setembro" ondrop="drop(event)" ondragover="allowDrop(event)">
+          <h4>Setembro</h4>
+          <div class="month-content"></div>
+        </div>
+        <div class="month" data-month="Outubro" ondrop="drop(event)" ondragover="allowDrop(event)">
+          <h4>Outubro</h4>
+          <div class="month-content"></div>
+        </div>
+        <div class="month" data-month="Novembro" ondrop="drop(event)" ondragover="allowDrop(event)">
+          <h4>Novembro</h4>
+          <div class="month-content"></div>
+        </div>
+        <div class="month" data-month="Dezembro" ondrop="drop(event)" ondragover="allowDrop(event)">
+          <h4>Dezembro</h4>
+          <div class="month-content"></div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<script>
-const days = [
-  "Segunda-feira",
-  "Terça-feira",
-  "Quarta-feira",
-  "Quinta-feira",
-  "Sexta-feira",
-  "Sábado",
-  "Domingo"
-];
+  <script src="script.js"></script>
+  <script>
+    // Array dos dias da semana
+    const days = [
+      "Segunda-feira",
+      "Terça-feira",
+      "Quarta-feira",
+      "Quinta-feira",
+      "Sexta-feira",
+      "Sábado",
+      "Domingo"
+    ];
 
-// Categorias e conteúdos
-const mathTopics = [
-  "Números e suas operações básicas",
-  "Habilidades mentais básicas",
-  "Frações e suas propriedades",
-  "MMC, MDC e Fatoração",
-  "Potenciação e radiciação",
-  "Razão e Proporção",
-  "Porcentagem",
-  "Unidades de Medida",
-  "Gráficos e Tabelas",
-  "Escalas",
-  "Conjuntos",
-  "Estatística",
-  "Função do primeiro grau",
-  "Função do segundo grau",
-  "Progressão aritmética",
-  "Progressão geométrica",
-  "Análise combinatória",
-  "Probabilidade",
-  "Geometria plana",
-  "Geometria espacial",
-  "Trigonometria",
-  "Logaritmos",
-  "Matemática financeira",
-  "Equações",
-  "Sistemas de equações"
-].map(t => ({text: t, category: "matematica"}));
+    // Categorias e conteúdos
+    const mathTopics = [
+      "Números e suas operações básicas",
+      "Habilidades mentais básicas",
+      "Frações e suas propriedades",
+      "MMC, MDC e Fatoração",
+      "Potenciação e radiciação",
+      "Razão e Proporção",
+      "Porcentagem",
+      "Unidades de Medida",
+      "Gráficos e Tabelas",
+      "Escalas",
+      "Conjuntos",
+      "Estatística",
+      "Função do primeiro grau",
+      "Função do segundo grau",
+      "Progressão aritmética",
+      "Progressão geométrica",
+      "Análise combinatória",
+      "Probabilidade",
+      "Geometria plana",
+      "Geometria espacial",
+      "Trigonometria",
+      "Logaritmos",
+      "Matemática financeira",
+      "Equações",
+      "Sistemas de equações"
+    ].map(t => ({ text: t, category: "matematica" }));
 
-const bioTopics = [
-  "Bioquímica", "Citologia", "Bioenergética", "Biologia Molecular",
-  "Biotecnologia e Engenharia Genética", "Citogenética", "Ciclo Celular",
-  "Origem da Vida", "Evolução", "Genética", "Ecologia", "Problemas Ambientais",
-  "Ciclo Menstrual", "Sistema nervoso", "Sistema digestório",
-  "Sistema cardiorrespiratório", "Sistema Imunológico", "Botânica",
-  "Zoologia", "Microbiologia", "Histologia", "Sangue", "Doenças", "Drogas",
-  "Taxonomia e Classificação dos Seres Vivos", "Reprodução Humana", "Embriologia"
-].map(t => ({text: t, category: "biologia"}));
+    const bioTopics = [
+      "Bioquímica", "Citologia", "Bioenergética", "Biologia Molecular",
+      "Biotecnologia e Engenharia Genética", "Citogenética", "Ciclo Celular",
+      "Origem da Vida", "Evolução", "Genética", "Ecologia", "Problemas Ambientais",
+      "Ciclo Menstrual", "Sistema nervoso", "Sistema digestório",
+      "Sistema cardiorrespiratório", "Sistema Imunológico", "Botânica",
+      "Zoologia", "Microbiologia", "Histologia", "Sangue", "Doenças", "Drogas",
+      "Taxonomia e Classificação dos Seres Vivos", "Reprodução Humana", "Embriologia"
+    ].map(t => ({ text: t, category: "biologia" }));
 
-const chemistryTopics = [
-  "Estudo da matéria", "Átomos", "Tabela Periódica", "Ligações Químicas",
-  "Funções Inorgânicas", "Radioatividade", "Estequiometria", "Soluções",
-  "Química Orgânica", "Reações Orgânicas", "Polímeros", "Isomeria",
-  "Termoquímica", "Eletroquímica", "Cinética Química",
-  "Equilíbrio Químico", "Propriedades Coligativas"
-].map(t => ({text: t, category: "quimica"}));
+    const chemistryTopics = [
+      "Estudo da matéria", "Átomos", "Tabela Periódica", "Ligações Químicas",
+      "Funções Inorgânicas", "Radioatividade", "Estequiometria", "Soluções",
+      "Química Orgânica", "Reações Orgânicas", "Polímeros", "Isomeria",
+      "Termoquímica", "Eletroquímica", "Cinética Química",
+      "Equilíbrio Químico", "Propriedades Coligativas"
+    ].map(t => ({ text: t, category: "quimica" }));
 
-const physicsTopics = [
-  "Cinemática",
-  "Dinâmica",
-  "Ondulatória",
-  "Termologia",
-  "Estática",
-  "Quantidade de Movimento e Impulso",
-  "Trabalho e Energia",
-  "Potência e Eficiência",
-  "Gravitação",
-  "Vetores",
-  "Eletrostática",
-  "Eletrodinâmica",
-  "Hidrostática",
-  "Óptica",
-  "Eletromagnetismo"
-].map(t => ({text: t, category: "fisica"}));
+    const physicsTopics = [
+      "Cinemática",
+      "Dinâmica",
+      "Ondulatória",
+      "Termologia",
+      "Estática",
+      "Quantidade de Movimento e Impulso",
+      "Trabalho e Energia",
+      "Potência e Eficiência",
+      "Gravitação",
+      "Vetores",
+      "Eletrostática",
+      "Eletrodinâmica",
+      "Hidrostática",
+      "Óptica",
+      "Eletromagnetismo"
+    ].map(t => ({ text: t, category: "fisica" }));
 
-const allTopics = [
-  ...mathTopics,
-  ...bioTopics,
-  ...chemistryTopics,
-  ...physicsTopics
-];
+    const geographyTopics = [
+      "Geografia Física","Meio Ambiente e Energia","Geopolítica","Geografia Econômica","População","Industrialização e Urbanização","Geografia Agrária"
+    ].map(text => ({ text, category:"geografia" }));
 
-// Renderiza lista de conteúdos
-const topicsDiv = document.getElementById("topics");
-allTopics.forEach(({text, category}) => {
-  const div = document.createElement("div");
-  div.classList.add("topic-item", category);
-  div.textContent = text;
-  div.draggable = true;
-  div.addEventListener("dragstart", dragStart);
-  topicsDiv.appendChild(div);
-});
+    const historyTopics = [
+      "Brasil Colônia","Brasil Império","Brasil República","Civilização pré-colombiana","Pré-história","Antiguidade",
+      "Idade média","Idade moderna","Idade contemporânea"
+    ].map(text => ({ text, category:"historia" }));
 
-// Renderiza agenda dos dias da semana
-const agendaDiv = document.getElementById("agenda");
-days.forEach(day => {
-  const dayDiv = document.createElement("div");
-  dayDiv.className = "day";
-  dayDiv.dataset.day = day;
-  dayDiv.innerHTML = `<h3>${day}</h3><div class="day-content" ondrop="drop(event)" ondragover="allowDrop(event)"></div>`;
-  agendaDiv.appendChild(dayDiv);
-});
+    const portuguesTopics = [
+      "Funções da linguagem","Figuras da linguagem","Variações linguísticas","Campanhas publicitárias",
+      "Gêneros e tipos textuais","Interpretação de Texto","Poemas"
+    ].map(text => ({ text, category:"portugues" }));
 
-function dragStart(event) {
-  event.dataTransfer.setData("text/plain", event.target.textContent);
-  event.dataTransfer.effectAllowed = "copy";
-}
+    const filosofiaSociologiaLiteraturaTopics = [
+      "Filosofia","Sociologia","Literatura"
+    ].map(text => ({ text, category:"filosofia-sociologia-literatura" }));
 
-function allowDrop(event) {
-  event.preventDefault();
-  event.dataTransfer.dropEffect = "copy";
-}
+    // Todos os tópicos
+    const allTopics = [
+      ...mathTopics,
+      ...bioTopics,
+      ...chemistryTopics,
+      ...physicsTopics,
+      ...geographyTopics,
+      ...historyTopics,
+      ...portuguesTopics,
+      ...filosofiaSociologiaLiteraturaTopics
+    ];
 
-function drop(event) {
-  event.preventDefault();
-  const topic = event.dataTransfer.getData("text/plain");
-  if (!topic) return;
+    // Referências do DOM
+    const topicsDiv = document.getElementById("topics");
+    const agendaDiv = document.getElementById("agenda");
+    const monthsContainer = document.getElementById('monthsContainer');
+    const monthBtn = document.getElementById('monthBtn');
 
-  let container = event.currentTarget;
-  if (!container.classList.contains("day-content") && !container.classList.contains("month-content")) {
-    container = container.querySelector(".day-content") || container.querySelector(".month-content") || container;
-  }
+    // Renderiza lista de conteúdos
+    allTopics.forEach(({ text, category }) => {
+      const div = document.createElement("div");
+      div.classList.add("topic-item", category);
+      div.textContent = text;
+      div.setAttribute('draggable', 'true');
+      div.addEventListener("dragstart", dragStart);
+      topicsDiv.appendChild(div);
+    });
 
-  // Evita duplicatas
-  const existing = Array.from(container.children).some(child => {
-    const textOnly = child.textContent.replace("×", "").trim();
-    return textOnly === topic;
-  });
-  if (existing) return;
+    // Renderiza agenda dos dias da semana
+    days.forEach(day => {
+      const dayDiv = document.createElement("div");
+      dayDiv.className = "day";
+      dayDiv.dataset.day = day;
+      dayDiv.innerHTML = `<h3>${day}</h3><div class="day-content" ondrop="drop(event)" ondragover="allowDrop(event)" aria-label="Conteúdos do dia ${day}"></div>`;
+      agendaDiv.appendChild(dayDiv);
+    });
 
-  // Categoria
-  let category = "";
-  for (const ctp of allTopics) {
-    if (ctp.text === topic) {
-      category = ctp.category;
-      break;
+    function dragStart(event) {
+      event.dataTransfer.setData("text/plain", event.target.textContent);
+      event.dataTransfer.effectAllowed = "copy";
     }
-  }
-  if (!category) category = "matematica";
 
-  const newTopic = document.createElement("div");
-  newTopic.className = `topic-item ${category}`;
+    function allowDrop(event) {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "copy";
+    }
 
-  if (container.classList.contains("month-content")) {
-    // checkbox no mês
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.className = "month-check";
-    checkbox.title = "Marcar como concluído";
+    function drop(event) {
+      event.preventDefault();
+      const topic = event.dataTransfer.getData("text/plain");
+      if (!topic) return;
 
-    const spanText = document.createElement("span");
-    spanText.textContent = topic;
+      let container = event.currentTarget;
+      if (!container.classList.contains("day-content") && !container.classList.contains("month-content")) {
+        container = container.querySelector(".day-content") || container.querySelector(".month-content") || container;
+      }
 
-    newTopic.appendChild(checkbox);
-    newTopic.appendChild(spanText);
+      // Evita duplicatas
+      const existing = Array.from(container.children).some(child => {
+        const textOnly = child.textContent.replace("×", "").trim();
+        return textOnly === topic;
+      });
+      if (existing) return;
 
-    // Atualiza estilo ao clicar checkbox
-    checkbox.addEventListener('change', () => {
-      if(checkbox.checked) {
-        newTopic.classList.add('checked');
+      // Categoria
+      let category = allTopics.find(t => t.text === topic)?.category || "matematica";
+
+      const newTopic = document.createElement("div");
+      newTopic.className = `topic-item ${category}`;
+
+      if (container.classList.contains("month-content")) {
+        // checkbox no mês
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.className = "month-check";
+        checkbox.title = "Marcar como concluído";
+
+        const spanText = document.createElement("span");
+        spanText.textContent = topic;
+
+        newTopic.appendChild(checkbox);
+        newTopic.appendChild(spanText);
+
+        checkbox.addEventListener('change', () => {
+          if (checkbox.checked) {
+            newTopic.classList.add('checked');
+          } else {
+            newTopic.classList.remove('checked');
+          }
+        });
       } else {
-        newTopic.classList.remove('checked');
+        // dia: só texto
+        newTopic.textContent = topic;
+      }
+
+      const removeBtn = document.createElement("span");
+      removeBtn.textContent = "×";
+      removeBtn.title = "Remover";
+      removeBtn.className = "remove-btn";
+      removeBtn.onclick = () => newTopic.remove();
+
+      newTopic.appendChild(removeBtn);
+      container.appendChild(newTopic);
+    }
+
+    monthBtn.addEventListener('click', () => {
+      if (monthsContainer.style.display === 'none' || monthsContainer.style.display === '') {
+        monthsContainer.style.display = 'block';
+        agendaDiv.style.display = 'none';
+      } else {
+        monthsContainer.style.display = 'none';
+        agendaDiv.style.display = 'grid';
       }
     });
-  } else {
-    // dia: só texto
-    newTopic.textContent = topic;
-  }
 
-  const removeBtn = document.createElement("span");
-  removeBtn.textContent = "×";
-  removeBtn.title = "Remover";
-  removeBtn.className = "remove-btn";
-  removeBtn.onclick = () => {
-    newTopic.remove();
-  };
+    function saveAgenda() {
+      const agendaData = {};
 
-  newTopic.appendChild(removeBtn);
-  container.appendChild(newTopic);
-}
-
-const monthBtn = document.getElementById('monthBtn');
-const monthsContainer = document.getElementById('monthsContainer');
-const agenda = document.getElementById('agenda');
-
-monthBtn.addEventListener('click', () => {
-  if (monthsContainer.style.display === 'none' || monthsContainer.style.display === '') {
-    monthsContainer.style.display = 'block';
-    agenda.style.display = 'none';
-  } else {
-    monthsContainer.style.display = 'none';
-    agenda.style.display = 'grid';
-  }
-});
-
-function saveAgenda() {
-  const agendaData = {};
-  // Salvar dias da semana
-  days.forEach(day => {
-    const dayContent = document.querySelector(`.day[data-day="${day}"] .day-content`);
-    agendaData[day] = Array.from(dayContent.children)
-      .map(c => c.textContent.replace("×", "").trim());
-  });
-
-  // Salvar meses com checkbox states
-  const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-  months.forEach(month => {
-    const monthContent = Array.from(document.querySelectorAll('.month')).find(m => m.dataset.month === month);
-    if (monthContent) {
-      const contentDiv = monthContent.querySelector('.month-content');
-      agendaData[month] = Array.from(contentDiv.children).map(child => {
-        const checkbox = child.querySelector("input.month-check");
-        let text = "";
-        let done = false;
-        if (checkbox) {
-          text = child.querySelector("span").textContent;
-          done = checkbox.checked;
-        } else {
-          text = child.textContent.replace("×", "").trim();
-        }
-        return { text, done };
+      // Salvar dias da semana
+      days.forEach(day => {
+        const dayContent = document.querySelector(`.day[data-day="${day}"] .day-content`);
+        agendaData[day] = Array.from(dayContent.children).map(c => c.textContent.replace("×", "").trim());
       });
-    }
-  });
 
-  localStorage.setItem('agendaData', JSON.stringify(agendaData));
-  alert('Agenda salva com sucesso!');
-}
-
-function loadAgenda() {
-  const agendaData = JSON.parse(localStorage.getItem('agendaData') || '{}');
-
-  // Carregar dias da semana
-  days.forEach(day => {
-    const dayContent = document.querySelector(`.day[data-day="${day}"] .day-content`);
-    dayContent.innerHTML = '';
-    if (agendaData[day]) {
-      agendaData[day].forEach(topic => {
-        let category = '';
-        for (const ctp of allTopics) {
-          if (ctp.text === topic) {
-            category = ctp.category;
-            break;
-          }
-        }
-        if (!category) category = "matematica";
-
-        const newTopic = document.createElement("div");
-        newTopic.className = `topic-item ${category}`;
-        newTopic.textContent = topic;
-
-        const removeBtn = document.createElement("span");
-        removeBtn.textContent = "×";
-        removeBtn.title = "Remover";
-        removeBtn.className = "remove-btn";
-        removeBtn.onclick = () => {
-          newTopic.remove();
-        };
-
-        newTopic.appendChild(removeBtn);
-        dayContent.appendChild(newTopic);
-      });
-    }
-  });
-
-  // Carregar meses com checkbox e aplicar classe checked
-  const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-  months.forEach(month => {
-    const monthContent = Array.from(document.querySelectorAll('.month')).find(m => m.dataset.month === month);
-    if (monthContent) {
-      const contentDiv = monthContent.querySelector('.month-content');
-      contentDiv.innerHTML = '';
-      if (agendaData[month]) {
-        agendaData[month].forEach(({text, done}) => {
-          let category = '';
-          for (const ctp of allTopics) {
-            if (ctp.text === text) {
-              category = ctp.category;
-              break;
+      // Salvar meses com checkbox states
+      const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+      months.forEach(month => {
+        const monthElement = Array.from(document.querySelectorAll('.month')).find(m => m.dataset.month === month);
+        if (monthElement) {
+          const contentDiv = monthElement.querySelector('.month-content');
+          agendaData[month] = Array.from(contentDiv.children).map(child => {
+            const checkbox = child.querySelector("input.month-check");
+            if (checkbox) {
+              return {
+                text: child.querySelector("span").textContent,
+                done: checkbox.checked
+              };
             }
-          }
-          if (!category) category = "matematica";
-
-          const newTopic = document.createElement("div");
-          newTopic.className = `topic-item ${category}`;
-
-          const checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.className = "month-check";
-          checkbox.title = "Marcar como concluído";
-          checkbox.checked = !!done;
-
-          const spanText = document.createElement("span");
-          spanText.textContent = text;
-
-          newTopic.appendChild(checkbox);
-          newTopic.appendChild(spanText);
-
-          if(done) newTopic.classList.add('checked');
-
-          // Atualiza estilo ao clicar checkbox
-          checkbox.addEventListener('change', () => {
-            if(checkbox.checked) {
-              newTopic.classList.add('checked');
-            } else {
-              newTopic.classList.remove('checked');
-            }
+            return { text: child.textContent.replace("×", "").trim(), done: false };
           });
+        }
+      });
 
-          const removeBtn = document.createElement("span");
-          removeBtn.textContent = "×";
-          removeBtn.title = "Remover";
-          removeBtn.className = "remove-btn";
-          removeBtn.onclick = () => {
-            newTopic.remove();
-          };
-
-          newTopic.appendChild(removeBtn);
-          contentDiv.appendChild(newTopic);
-        });
-      }
+      localStorage.setItem('agendaData', JSON.stringify(agendaData));
+      alert('Agenda salva com sucesso!');
     }
-  });
-}
 
-document.getElementById('saveBtn').addEventListener('click', saveAgenda);
-document.getElementById('loadBtn').addEventListener('click', loadAgenda);
-</script>
+    function loadAgenda() {
+      const agendaData = JSON.parse(localStorage.getItem('agendaData') || '{}');
+
+      // Carregar dias da semana
+      days.forEach(day => {
+        const dayContent = document.querySelector(`.day[data-day="${day}"] .day-content`);
+        dayContent.innerHTML = '';
+        if (agendaData[day]) {
+          agendaData[day].forEach(topic => {
+            let category = allTopics.find(t => t.text === topic)?.category || "matematica";
+
+            const newTopic = document.createElement("div");
+            newTopic.className = `topic-item ${category}`;
+            newTopic.textContent = topic;
+
+            const removeBtn = document.createElement("span");
+            removeBtn.textContent = "×";
+            removeBtn.title = "Remover";
+            removeBtn.className = "remove-btn";
+            removeBtn.onclick = () => newTopic.remove();
+
+            newTopic.appendChild(removeBtn);
+            dayContent.appendChild(newTopic);
+          });
+        }
+      });
+
+      // Carregar meses com checkbox e aplicar classe checked
+      const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+      months.forEach(month => {
+        const monthElement = Array.from(document.querySelectorAll('.month')).find(m => m.dataset.month === month);
+        if (monthElement) {
+          const contentDiv = monthElement.querySelector('.month-content');
+          contentDiv.innerHTML = '';
+          if (agendaData[month]) {
+            agendaData[month].forEach(({ text, done }) => {
+              let category = allTopics.find(t => t.text === text)?.category || "matematica";
+
+              const newTopic = document.createElement("div");
+              newTopic.className = `topic-item ${category}`;
+
+              const checkbox = document.createElement("input");
+              checkbox.type = "checkbox";
+              checkbox.className = "month-check";
+              checkbox.title = "Marcar como concluído";
+              checkbox.checked = !!done;
+
+              const spanText = document.createElement("span");
+              spanText.textContent = text;
+
+              newTopic.appendChild(checkbox);
+              newTopic.appendChild(spanText);
+
+              if (done) newTopic.classList.add('checked');
+
+              checkbox.addEventListener('change', () => {
+                if (checkbox.checked) {
+                  newTopic.classList.add('checked');
+                } else {
+                  newTopic.classList.remove('checked');
+                }
+              });
+
+              const removeBtn = document.createElement("span");
+              removeBtn.textContent = "×";
+              removeBtn.title = "Remover";
+              removeBtn.className = "remove-btn";
+              removeBtn.onclick = () => newTopic.remove();
+
+              newTopic.appendChild(removeBtn);
+              contentDiv.appendChild(newTopic);
+            });
+          }
+        }
+      });
+    }
+
+    document.getElementById('saveBtn').addEventListener('click', saveAgenda);
+    document.getElementById('loadBtn').addEventListener('click', loadAgenda);
+
+  </script>
 </body>
 </html>
