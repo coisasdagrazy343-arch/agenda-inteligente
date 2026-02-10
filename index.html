@@ -9,7 +9,6 @@
     font-family: Arial, sans-serif;
     padding: 20px;
     background: #f0f2f5;
-    user-select: none;
   }
   h1 {
     color: #5C6AC4;
@@ -20,77 +19,47 @@
     gap: 15px;
     flex-wrap: wrap;
   }
-  /* Cada aba tem seus próprios conteúdos */
-  .topicsPanel {
-    width: 280px;
-    max-height: 80vh;
-    overflow-y: auto;
+  #topics, #agenda, #monthsContainer {
     background: #fff;
     border-radius: 5px;
     padding: 15px;
     box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
-    display: none;
-    position: relative;
   }
-  .topicsPanel.active {
-    display: block;
+  #topics {
+    width: 280px;
+    max-height: 80vh;
+    overflow-y: auto;
   }
-  .topicsPanel h2 {
+  #topics h2 {
     margin-top: 0;
   }
-  /* Botão toggle ocultar conteúdos radar */
-  #toggleRadarContentsBtn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-weight: bold;
-    font-size: 18px;
-    cursor: pointer;
-    user-select: none;
-    background: #4169e1;
-    color: white;
-    border-radius: 3px;
-    padding: 4px 8px;
-    border: none;
-    transition: background-color 0.3s ease;
-  }
-  #toggleRadarContentsBtn:hover {
-    background-color: #304bbd;
-  }
-
   .topic-item {
     margin: 5px 0;
     padding: 6px 8px;
     border-radius: 4px;
+    user-select: none;
+    cursor: grab;
     color: #fff;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    cursor: grab;
-    position: relative;
-    user-select: none;
-    transition: opacity 0.4s ease, filter 0.4s ease;
   }
   .topic-item:active {
     cursor: grabbing;
   }
   /* Colors by category */
-  .matematica { background: #4169e1; }
-  .biologia { background: #2e8b57; }
-  .quimica { background: #800080; }
-  .fisica { background: #b22222; }
-  .geografia { background: #fff1c1; color: #5a4d12; }
-  .historia { background: #ffd18c; color: #5a4d12; }
-  .portugues { background: #f9d5e5; color: #6a1b4d; }
-  .filosofia-sociologia-literatura { background: #cde7f0; color: #1a4e7a; }
-
-  #agenda, #radarContainer {
-    background: #fff;
-    border-radius: 5px;
-    padding: 15px;
-    box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
+  .matematica {
+    background: #4169e1;
   }
-
+  .biologia {
+    background: #2e8b57;
+  }
+  .quimica {
+    background: #800080;
+  }
+  .fisica {
+    background: #b22222;
+  }
   #agenda {
     flex: 1;
     display: grid;
@@ -98,10 +67,8 @@
     gap: 10px;
     max-height: 80vh;
     overflow-y: auto;
-    display: none;
   }
-  
-  .day {
+  .day, .month {
     background: #fff;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -110,295 +77,168 @@
     display: flex;
     flex-direction: column;
   }
-  .day h3 {
+  .day h3, .month h4 {
     margin: 0 0 8px 0;
     font-size: 1em;
     border-bottom: 1px solid #ccc;
     padding-bottom: 3px;
     text-align: center;
   }
-  .day-content {
+  .day-content, .month-content {
     flex: 1;
     overflow-y: auto;
   }
-  .day-content .topic-item {
+  .day-content .topic-item, .month-content .topic-item {
     margin: 4px 0;
     border-radius: 4px;
     padding: 4px 6px;
-    cursor: grab;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    cursor: default;
   }
   .remove-btn {
     color: #faa;
     font-weight: bold;
     cursor: pointer;
     margin-left: 10px;
-    user-select: none;
   }
-
-  /* Radar */
-  #radarContainer {
-    display: flex;
-    margin: 0;
-    padding: 15px;
-    background: #fff;
-    border-radius: 5px;
-    flex: 1;
-    max-height: 80vh;
-    overflow-y: auto;
-    box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
-  }
-  #radarLevels {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    height: 100%;
-  }
-  .radar-level {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    min-height: 400px;
-    max-height: 650px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    background-color: #fff;
-    color: inherit;
-  }
-  .radar-level strong {
-    font-size: 1em;
-    margin-bottom: 8px;
-    user-select: none;
-    color: #333;
-  }
-  .radar-content {
-    flex: 1;
-  }
-  .radar-level .topic-item {
-    user-select: none;
-    cursor: grab;
-    margin-bottom: 4px;
-    padding: 6px 10px 6px 10px;
-    border-radius: 6px;
-    display: flex;
-    flex-direction: column;
-    color: #fff;
-    position: relative;
-    transition: background-color 0.3s ease, opacity 0.4s ease;
-  }
-  /* Style when out of focus */
-  .radar-level .topic-item.out-of-focus {
-    opacity: 0.4;
-    filter: grayscale(80%);
-  }
-  .radar-level .topic-item.matematica { background: #4169e1; color: #fff !important; }
-  .radar-level .topic-item.biologia { background: #2e8b57; color: #fff !important; }
-  .radar-level .topic-item.quimica { background: #800080; color: #fff !important; }
-  .radar-level .topic-item.fisica { background: #b22222; color: #fff !important; }
-  .radar-level .topic-item.geografia { background: #fff1c1; color: #5a4d12 !important; }
-  .radar-level .topic-item.historia { background: #ffd18c; color: #5a4d12 !important; }
-  .radar-level .topic-item.portugues { background: #f9d5e5; color: #6a1b4d !important; }
-  .radar-level .topic-item.filosofia-sociologia-literatura { background: #cde7f0; color: #1a4e7a !important; }
-
-  .radar-level .topic-item .remove-btn {
-    color: #d44;
-    font-weight: bold;
-    cursor: pointer;
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    user-select: none;
-    font-size: 18px;
-  }
-  .radar-level .topic-item .edit-btn {
-    position: absolute;
-    top: 6px;
-    right: 36px;
-    font-size: 18px;
-    cursor: pointer;
-    user-select: none;
-  }
-  .radar-level .topic-item .edit-btn:hover, .radar-level .topic-item .remove-btn:hover {
-    color: #ffdddd;
-  }
-
-  /* Eye toggle button */
-  .eye-toggle {
-    position: absolute;
-    top: 6px;
-    right: 70px;
-    width: 22px;
-    height: 22px;
-    cursor: pointer;
-    opacity: 0.8;
-    user-select: none;
-    filter: drop-shadow(0 0 1px rgba(0,0,0,0.3));
-    transition: filter 0.3s ease;
-  }
-  .eye-toggle:hover {
-    opacity: 1;
-    filter: drop-shadow(0 0 3px rgba(0,0,0,0.7));
-  }
-  .eye-svg {
-    width: 22px;
-    height: 22px;
-    fill: white;
-    pointer-events: none;
-  }
-
-  /* Checklist box styles for radar */
-  .checklist {
-    margin-top: 8px;
-    padding-left: 12px;
-    color: #eee;
-    font-size: 0.9em;
-  }
-  .checklist label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 4px;
-    cursor: pointer;
-  }
-  .checklist input[type="checkbox"] {
-    cursor: pointer;
-    width: 16px;
-    height: 16px;
-  }
-
-  /* Edit modal overlay */
-  #editModalOverlay {
+  #monthsContainer {
     display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: 10000;
-    align-items: center;
-    justify-content: center;
+    margin-top: 20px;
+    flex: 1;
   }
-  #editModal {
-    background: #fff;
-    padding: 20px 25px;
-    border-radius: 8px;
-    width: 360px;
-    max-width: 94vw;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.3);
-    font-size: 14px;
-    max-height: 80vh;
-    overflow-y: auto;
+  #monthsGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
   }
-  #editModal h3 {
-    margin-top: 0;
-    margin-bottom: 14px;
-    font-size: 20px;
-  }
-  #editModal textarea {
-    width: 100%;
-    min-height: 150px;
-    font-family: inherit;
-    font-size: 14px;
-    padding: 8px;
-    box-sizing: border-box;
-    resize: vertical;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  #editModalButtons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 12px;
-  }
-  #editModal button {
-    padding: 8px 16px;
-    font-size: 14px;
-  }
-
-  /* Botões azuis para Salvar, Carregar e Radar */
+  /* Buttons */
   button {
-    background-color: #4169e1; /* azul royal */
-    color: white;
+    margin-right: 8px;
+    padding: 7px 14px;
     border: none;
-    border-radius: 5px;
-    padding: 8px 15px;
+    background-color: #5C6AC4;
+    color: white;
+    border-radius: 4px;
     cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-    margin-right: 6px;
-    margin-bottom: 10px;
   }
   button:hover {
-    background-color: #304bbd;
+    background-color: #4a54a1;
+  }
+  /* Checkbox and span layout in month topics */
+  .month-content .topic-item {
+    cursor: default;
+    display: flex !important;
+    align-items: center;
+    transition: background-color 0.25s ease, opacity 0.25s ease;
+  }
+  .month-content .topic-item input.month-check {
+    margin-right: 8px;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    /* Simple scale animation on click */
+    transition: transform 0.2s ease;
+  }
+  .month-content .topic-item input.month-check:checked {
+    animation: checkScale 0.3s ease forwards;
+  }
+  @keyframes checkScale {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+  }
+  .month-content .topic-item.checked {
+    opacity: 0.6;
+    background-color: #222;
+    color: #bbb;
+  }
+  .month-content .topic-item.checked span {
+    text-decoration: line-through;
   }
 </style>
 </head>
 <body>
-<h1>Agendinha de Estudos - Arraste os conteúdos</h1>
+<h1>Agendinha de Estudos - Arraste os conteúdos para os dias da semana ou para os meses</h1>
 
 <button id="saveBtn">Salvar Agenda</button>
 <button id="loadBtn">Carregar Agenda</button>
-<button id="radarBtn">Radar dos conteúdos</button>
+<button id="monthBtn">Organizar por Mês</button>
 
 <div id="container">
-
-  <!-- Conteúdos para Radar -->
-  <div id="topicsRadar" class="topicsPanel">
-    <h2>Conteúdos Radar</h2>
-    <button id="toggleRadarContentsBtn" title="Mostrar/Ocultar Conteúdos Radar">⬆️</button>
+  <div id="topics">
+    <h2>Conteúdos</h2>
   </div>
 
-  <!-- Agenda Dias da Semana -->
+  <!-- Agenda dias da semana -->
   <div id="agenda"></div>
 
-  <!-- Radar -->
-  <div id="radarContainer">
-    <div id="radarLevels">
-      <div class="radar-level" data-level="0">
-        <strong>Nunca estudei</strong>
-        <div class="radar-content"></div>
+  <!-- Agenda por meses -->
+  <div id="monthsContainer">
+    <h3>Organize seus conteúdos por mês</h3>
+    <div id="monthsGrid">
+      <div class="month" data-month="Janeiro" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h4>Janeiro</h4>
+        <div class="month-content"></div>
       </div>
-      <div class="radar-level" data-level="1">
-        <strong>Lacuna Teórica</strong>
-        <div class="radar-content"></div>
+      <div class="month" data-month="Fevereiro" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h4>Fevereiro</h4>
+        <div class="month-content"></div>
       </div>
-      <div class="radar-level" data-level="2">
-        <strong>Já estudei toda a teoria mas erro muitos exercícios</strong>
-        <div class="radar-content"></div>
+      <div class="month" data-month="Março" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h4>Março</h4>
+        <div class="month-content"></div>
       </div>
-      <div class="radar-level" data-level="3">
-        <strong>Domino</strong>
-        <div class="radar-content"></div>
+      <div class="month" data-month="Abril" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h4>Abril</h4>
+        <div class="month-content"></div>
       </div>
-    </div>
-    <button id="radarClearBtn" style="margin-top:15px;">Limpar Radar</button>
-  </div>
-</div>
-
-<!-- Edit Modal -->
-<div id="editModalOverlay">
-  <div id="editModal">
-    <h3>Editar checklist para conteúdo:</h3>
-    <div id="modalTitleName" style="font-weight:bold; margin-bottom:8px;"></div>
-    <textarea id="checklistText" placeholder="Escreva uma tarefa por linha. Exemplo:
-Assistir videoaula
-Fazer 10 questões"></textarea>
-    <div id="editModalButtons">
-      <button id="cancelEditBtn" type="button">Cancelar</button>
-      <button id="saveEditBtn" type="button">Salvar</button>
+      <div class="month" data-month="Maio" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h4>Maio</h4>
+        <div class="month-content"></div>
+      </div>
+      <div class="month" data-month="Junho" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h4>Junho</h4>
+        <div class="month-content"></div>
+      </div>
+      <div class="month" data-month="Julho" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h4>Julho</h4>
+        <div class="month-content"></div>
+      </div>
+      <div class="month" data-month="Agosto" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h4>Agosto</h4>
+        <div class="month-content"></div>
+      </div>
+      <div class="month" data-month="Setembro" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h4>Setembro</h4>
+        <div class="month-content"></div>
+      </div>
+      <div class="month" data-month="Outubro" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h4>Outubro</h4>
+        <div class="month-content"></div>
+      </div>
+      <div class="month" data-month="Novembro" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h4>Novembro</h4>
+        <div class="month-content"></div>
+      </div>
+      <div class="month" data-month="Dezembro" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h4>Dezembro</h4>
+        <div class="month-content"></div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-// --- Dados e tópicos globais ---
 const days = [
-  "Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado","Domingo"
+  "Segunda-feira",
+  "Terça-feira",
+  "Quarta-feira",
+  "Quinta-feira",
+  "Sexta-feira",
+  "Sábado",
+  "Domingo"
 ];
 
+// Categorias e conteúdos
 const mathTopics = [
   "Números e suas operações básicas",
   "Habilidades mentais básicas",
@@ -424,11 +264,8 @@ const mathTopics = [
   "Logaritmos",
   "Matemática financeira",
   "Equações",
-  "Sistemas de equações",
-  "Notação Científica",
-  "Produtos Notáveis",
-  "Fatoração de Expressões Algébricas"
-].map(text => ({text, category:"matematica"}));
+  "Sistemas de equações"
+].map(t => ({text: t, category: "matematica"}));
 
 const bioTopics = [
   "Bioquímica", "Citologia", "Bioenergética", "Biologia Molecular",
@@ -437,11 +274,8 @@ const bioTopics = [
   "Ciclo Menstrual", "Sistema nervoso", "Sistema digestório",
   "Sistema cardiorrespiratório", "Sistema Imunológico", "Botânica",
   "Zoologia", "Microbiologia", "Histologia", "Sangue", "Doenças", "Drogas",
-  "Taxonomia e Classificação dos Seres Vivos", "Reprodução Humana",
-  "Embriologia",
-  "Sistema Endócrino",
-  "Sistema Excreto"
-].map(text => ({text, category:"biologia"}));
+  "Taxonomia e Classificação dos Seres Vivos", "Reprodução Humana", "Embriologia"
+].map(t => ({text: t, category: "biologia"}));
 
 const chemistryTopics = [
   "Estudo da matéria", "Átomos", "Tabela Periódica", "Ligações Químicas",
@@ -449,760 +283,278 @@ const chemistryTopics = [
   "Química Orgânica", "Reações Orgânicas", "Polímeros", "Isomeria",
   "Termoquímica", "Eletroquímica", "Cinética Química",
   "Equilíbrio Químico", "Propriedades Coligativas"
-].map(text => ({text, category:"quimica"}));
+].map(t => ({text: t, category: "quimica"}));
 
 const physicsTopics = [
-  "Cinemática","Dinâmica","Ondulatória","Termologia","Estática","Quantidade de Movimento e Impulso","Trabalho e Energia",
-  "Potência e Eficiência","Gravitação","Vetores","Eletrostática","Eletrodinâmica","Hidrostática","Óptica","Eletromagnetismo"
-].map(text => ({text, category:"fisica"}));
-
-const geographyTopics = [
-  "Geografia Física","Meio Ambiente e Energia","Geopolítica","Geografia Econômica","População","Industrialização e Urbanização","Geografia Agrária"
-].map(text => ({text, category:"geografia"}));
-
-const historyTopics = [
-  "Brasil Colônia","Brasil Império","Brasil República","Civilização pré-colombiana","Pré-história","Antiguidade",
-  "Idade média","Idade moderna","Idade contemporânea"
-].map(text => ({text, category:"historia"}));
-
-const portuguesTopics = [
-  "Funções da linguagem","Figuras da linguagem","Variações linguísticas","Campanhas publicitárias",
-  "Gêneros e tipos textuais","Interpretação de Texto","Poemas"
-].map(text => ({text, category:"portugues"}));
-
-const filosofiaSociologiaLiteraturaTopics = [
-  "Filosofia","Sociologia","Literatura"
-].map(text => ({text, category:"filosofia-sociologia-literatura"}));
+  "Cinemática",
+  "Dinâmica",
+  "Ondulatória",
+  "Termologia",
+  "Estática",
+  "Quantidade de Movimento e Impulso",
+  "Trabalho e Energia",
+  "Potência e Eficiência",
+  "Gravitação",
+  "Vetores",
+  "Eletrostática",
+  "Eletrodinâmica",
+  "Hidrostática",
+  "Óptica",
+  "Eletromagnetismo"
+].map(t => ({text: t, category: "fisica"}));
 
 const allTopics = [
   ...mathTopics,
   ...bioTopics,
   ...chemistryTopics,
-  ...physicsTopics,
-  ...geographyTopics,
-  ...historyTopics,
-  ...portuguesTopics,
-  ...filosofiaSociologiaLiteraturaTopics
+  ...physicsTopics
 ];
 
-// Radar checklist details in memory
-let radarDetails = {};
-
-// Store initial order for radar contents by category for proper restore position
-let initialRadarOrder = {};
-
-// Initialize order index by category mapping on load
-function updateInitialRadarOrder() {
-  const radarTopics = JSON.parse(localStorage.getItem('radarTopics') || '[]');
-  initialRadarOrder = {};
-  const categoryLists = {};
-  allTopics.forEach(({text, category})=>{
-    if(!categoryLists[category]) categoryLists[category] = [];
-    categoryLists[category].push(text);
-  });
-  Object.entries(categoryLists).forEach(([category,items])=>{
-    initialRadarOrder[category] = items.filter(t=>radarTopics.includes(t));
-  });
-}
-
-// Call on start
-updateInitialRadarOrder();
-
-const topicsPanels = {
-  radar: document.getElementById('topicsRadar')
-};
-
-const agendaDiv = document.getElementById("agenda");
-
-// Render agenda dias da semana
-days.forEach(day => {
-  const dayDiv = document.createElement("div");
-  dayDiv.className = "day";
-  dayDiv.dataset.day = day;
-  dayDiv.innerHTML = `<h3>${day}</h3><div class="day-content" ondrop="dropAgenda(event)" ondragover="allowDrop(event)"></div>`;
-  agendaDiv.appendChild(dayDiv);
-});
-
-// Create eye SVG element
-function createEyeSvg() {
-  const svgNS = "http://www.w3.org/2000/svg";
-  const svg = document.createElementNS(svgNS, 'svg');
-  svg.setAttribute('viewBox', '0 0 24 24');
-  svg.classList.add('eye-svg');
-  svg.innerHTML = `
-    <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 110-10 5 5 0 010 10z"/>
-    <circle cx="12" cy="12" r="3"/>
-  `;
-  return svg;
-}
-
-// ----- FUNÇÕES PARA RENDERIZAR LISTA DE CONTEÚDOS DA ABA -----------
-
-function renderTopicsPanelRadar() {
-  let radarTopics = JSON.parse(localStorage.getItem('radarTopics') || '[]');
-  topicsPanels.radar.innerHTML = '<h2>Conteúdos Radar</h2>';
-  // Reinsert toggle button after resetting innerHTML
-  topicsPanels.radar.appendChild(toggleRadarContentsBtn);
-
-  // Agrupa por categoria e ordena pela ordem inicial armazenada
-  const groupedByCategory = {};
-  radarTopics.forEach(t=>{
-    const category = allTopics.find(tp=>tp.text===t)?.category || 'matematica';
-    if(!groupedByCategory[category]) groupedByCategory[category] = [];
-    groupedByCategory[category].push(t);
-  });
-
-  Object.entries(groupedByCategory).forEach(([category,list])=>{
-    if(initialRadarOrder[category]) {
-      list.sort((a,b)=>{
-        const order = initialRadarOrder[category];
-        const ia = order.indexOf(a);
-        const ib = order.indexOf(b);
-        if(ia === -1 && ib === -1) return a.localeCompare(b);
-        if(ia === -1) return 1;
-        if(ib === -1) return -1;
-        return ia - ib;
-      });
-    }
-    list.forEach(text => {
-      const div = createDraggableTopic(text, category);
-      topicsPanels.radar.appendChild(div);
-    });
-  });
-}
-
-function createDraggableTopic(text, category){
+// Renderiza lista de conteúdos
+const topicsDiv = document.getElementById("topics");
+allTopics.forEach(({text, category}) => {
   const div = document.createElement("div");
   div.classList.add("topic-item", category);
   div.textContent = text;
   div.draggable = true;
   div.addEventListener("dragstart", dragStart);
-  return div;
-}
+  topicsDiv.appendChild(div);
+});
 
-// --- Drag and drop handlers ---
+// Renderiza agenda dos dias da semana
+const agendaDiv = document.getElementById("agenda");
+days.forEach(day => {
+  const dayDiv = document.createElement("div");
+  dayDiv.className = "day";
+  dayDiv.dataset.day = day;
+  dayDiv.innerHTML = `<h3>${day}</h3><div class="day-content" ondrop="drop(event)" ondragover="allowDrop(event)"></div>`;
+  agendaDiv.appendChild(dayDiv);
+});
+
 function dragStart(event) {
-  const el = event.target;
-  event.dataTransfer.setData("text/plain", el.textContent);
-  event.dataTransfer.effectAllowed = "move";
-
-  // Remove do radar se estiver no radar
-  if(el.closest('.radar-content')) {
-    el.remove();
-    let radarData = JSON.parse(localStorage.getItem('radarData') || '{}');
-    delete radarData[el.textContent.replace(/[×✏️]/g,'').trim()];
-    localStorage.setItem('radarData', JSON.stringify(radarData));
-    renderTopicsPanelRadar();
-  }
-  // Remove da agenda se estiver na agenda
-  else if(el.closest('.day-content')) {
-    el.remove();
-    const dayDiv = el.closest('.day');
-    if(dayDiv){
-      let agendaData = JSON.parse(localStorage.getItem('agendaData') || '{}');
-      const day = dayDiv.dataset.day;
-      if(agendaData[day]){
-        agendaData[day] = agendaData[day].filter(t => t.trim() !== el.textContent.trim());
-        localStorage.setItem('agendaData', JSON.stringify(agendaData));
-      }
-    }
-  }
-  else {
-    event.dataTransfer.setData("source-panel", el.closest('.topicsPanel')?.id || "");
-  }
+  event.dataTransfer.setData("text/plain", event.target.textContent);
+  event.dataTransfer.effectAllowed = "copy";
 }
+
 function allowDrop(event) {
   event.preventDefault();
-  event.dataTransfer.dropEffect = "move";
+  event.dataTransfer.dropEffect = "copy";
 }
 
-// Drag and drop reordering as before
-function dragOverRadar(event) {
-  event.preventDefault();
-  event.dataTransfer.dropEffect = "move";
-
-  const target = event.target.closest('.topic-item');
-  const container = event.currentTarget;
-  if (!target || !container) return;
-
-  const rect = target.getBoundingClientRect();
-  const relY = event.clientY - rect.top;
-  const midY = rect.height / 2;
-
-  if (relY < midY) {
-    target.style['border-top'] = '2px solid blue';
-    target.style['border-bottom'] = '';
-  } else {
-    target.style['border-top'] = '';
-    target.style['border-bottom'] = '2px solid blue';
-  }
-
-  Array.from(container.children).forEach(child => {
-    if (child !== target) {
-      child.style['border-top'] = '';
-      child.style['border-bottom'] = '';
-    }
-  });
-}
-function dragLeaveRadar(event) {
-  const target = event.target.closest('.topic-item');
-  if (target) {
-    target.style['border-top'] = '';
-    target.style['border-bottom'] = '';
-  }
-}
-
-// Drop radar with reordering logic
 function drop(event) {
   event.preventDefault();
   const topic = event.dataTransfer.getData("text/plain");
   if (!topic) return;
 
   let container = event.currentTarget;
-  if (!container.classList.contains("radar-content")) return;
-
-  // Remove border styles
-  Array.from(container.children).forEach(child=>{
-    child.style['border-top'] = '';
-    child.style['border-bottom'] = '';
-  });
-
-  const items = Array.from(container.children);
-  let dropIndex = items.length; // default append
-
-  const target = event.target.closest('.topic-item');
-  if (target && target.parentElement === container) {
-    const rect = target.getBoundingClientRect();
-    const relY = event.clientY - rect.top;
-    const midY = rect.height / 2;
-
-    dropIndex = items.indexOf(target);
-    if (relY >= midY) dropIndex++;
+  if (!container.classList.contains("day-content") && !container.classList.contains("month-content")) {
+    container = container.querySelector(".day-content") || container.querySelector(".month-content") || container;
   }
 
-  // Remove existing to reposition
-  const existing = items.find(el => el.textContent.replace(/[×✏️]/g, '').trim() === topic);
-  if (existing) existing.remove();
-
-  // Create block to insert
-  const category = allTopics.find(t => t.text === topic)?.category || "matematica";
-  const block = document.createElement('div');
-  block.className = `topic-item ${category}`;
-  block.draggable = true;
-  block.textContent = topic;
-
-  // Add eye toggle
-  const eyeBtn = document.createElement('div');
-  eyeBtn.className = 'eye-toggle';
-  const eyeSvg = createEyeSvg();
-  eyeBtn.appendChild(eyeSvg);
-  eyeBtn.title = 'Clique para ocultar/mostrar';
-  eyeBtn.style.userSelect = 'none';
-  eyeBtn.style.position = 'absolute';
-  eyeBtn.style.top = '6px';
-  eyeBtn.style.right = '70px';
-  eyeBtn.style.width = '22px';
-  eyeBtn.style.height = '22px';
-  eyeBtn.style.cursor = 'pointer';
-
-  eyeBtn.onclick = (e) => {
-    e.stopPropagation();
-    if(block.classList.contains('out-of-focus')){
-      block.classList.remove('out-of-focus');
-      eyeBtn.style.opacity = '0.8';
-    }
-    else {
-      block.classList.add('out-of-focus');
-      eyeBtn.style.opacity = '0.4';
-    }
-  };
-  block.appendChild(eyeBtn);
-
-  // Buttons edit and remove (right side)
-  const editBtn = document.createElement('span');
-  editBtn.className = 'edit-btn';
-  editBtn.innerHTML = '✏️';
-  editBtn.title = 'Editar checklist';
-  editBtn.onclick = (e) => {
-    e.stopPropagation();
-    openEditModal(topic);
-  };
-  block.appendChild(editBtn);
-
-  const removeBtn = document.createElement('span');
-  removeBtn.className = 'remove-btn';
-  removeBtn.textContent = '×';
-  removeBtn.title = 'Remover do Radar';
-  removeBtn.onclick = e => {
-    e.stopPropagation();
-
-    let radarDataObj = JSON.parse(localStorage.getItem('radarData') || '{}');
-    delete radarDataObj[topic];
-    localStorage.setItem('radarData', JSON.stringify(radarDataObj));
-
-    if (radarDetails[topic]) {
-      delete radarDetails[topic];
-      localStorage.setItem('radarDetails', JSON.stringify(radarDetails));
-    }
-
-    let radarTopics = JSON.parse(localStorage.getItem('radarTopics') || '[]');
-
-    // Return content to radar list
-    if (!radarTopics.includes(topic)) {
-      const category = allTopics.find(t => t.text === topic)?.category || "matematica";
-      const catList = initialRadarOrder[category] || [];
-      let insertIndex = radarTopics.length;
-      for (let i = 0; i < radarTopics.length; i++) {
-        const t = radarTopics[i];
-        const tCat = allTopics.find(x => x.text === t)?.category;
-        if (tCat === category) {
-          const tPos = catList.indexOf(t);
-          const topicPos = catList.indexOf(topic);
-          if (tPos >= 0 && topicPos >= 0 && tPos > topicPos) {
-            insertIndex = i;
-            break;
-          }
-        }
-      }
-      radarTopics.splice(insertIndex, 0, topic);
-    }
-    localStorage.setItem('radarTopics', JSON.stringify(radarTopics));
-    renderRadarContent();
-    renderTopicsPanelRadar();
-  };
-  block.appendChild(removeBtn);
-
-  block.addEventListener('dragstart', dragStart);
-
-  // Insert at drop position
-  if (dropIndex >= container.children.length) {
-    container.appendChild(block);
-  } else {
-    container.insertBefore(block, container.children[dropIndex]);
-  }
-
-  // Update radarData in localStorage with new order and level
-  const radarData = {};
-  document.querySelectorAll('#radarLevels .radar-level').forEach(levelDiv => {
-    const level = levelDiv.dataset.level;
-    levelDiv.querySelectorAll('.topic-item').forEach(item => {
-      radarData[item.textContent.replace(/[×✏️]/g, '').trim()] = parseInt(level);
-    });
+  // Evita duplicatas
+  const existing = Array.from(container.children).some(child => {
+    const textOnly = child.textContent.replace("×", "").trim();
+    return textOnly === topic;
   });
-  localStorage.setItem('radarData', JSON.stringify(radarData));
+  if (existing) return;
 
-  renderTopicsPanelRadar();
-}
+  // Categoria
+  let category = "";
+  for (const ctp of allTopics) {
+    if (ctp.text === topic) {
+      category = ctp.category;
+      break;
+    }
+  }
+  if (!category) category = "matematica";
 
-function dropAgenda(event) {
-  event.preventDefault();
-  const topic = event.dataTransfer.getData("text/plain");
-  if (!topic) return;
-  let container = event.currentTarget;
-  if (!container.classList.contains("day-content")) return;
-
-  if (Array.from(container.children).some(child => child.textContent.replace(/[×✏️]/g,'').trim() === topic)) return;
-  const dayDiv = container.closest(".day");
-  if(!dayDiv) return;
-  
-  const category = allTopics.find(t => t.text === topic)?.category || "matematica";
   const newTopic = document.createElement("div");
   newTopic.className = `topic-item ${category}`;
-  newTopic.textContent = topic;
-  newTopic.draggable = true;
-  newTopic.addEventListener("dragstart", dragStart);
+
+  if (container.classList.contains("month-content")) {
+    // checkbox no mês
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.className = "month-check";
+    checkbox.title = "Marcar como concluído";
+
+    const spanText = document.createElement("span");
+    spanText.textContent = topic;
+
+    newTopic.appendChild(checkbox);
+    newTopic.appendChild(spanText);
+
+    // Atualiza estilo ao clicar checkbox
+    checkbox.addEventListener('change', () => {
+      if(checkbox.checked) {
+        newTopic.classList.add('checked');
+      } else {
+        newTopic.classList.remove('checked');
+      }
+    });
+  } else {
+    // dia: só texto
+    newTopic.textContent = topic;
+  }
+
   const removeBtn = document.createElement("span");
   removeBtn.textContent = "×";
   removeBtn.title = "Remover";
   removeBtn.className = "remove-btn";
   removeBtn.onclick = () => {
     newTopic.remove();
-    // Atualizar localStorage agenda
-    const day = dayDiv.dataset.day;
-    let agendaData = JSON.parse(localStorage.getItem('agendaData') || '{}');
-    if (agendaData[day]) {
-      agendaData[day] = agendaData[day].filter(t => t.trim() !== topic.trim());
-      localStorage.setItem('agendaData', JSON.stringify(agendaData));
-    }
   };
+
   newTopic.appendChild(removeBtn);
   container.appendChild(newTopic);
+}
 
-  // Salvar no localStorage agenda
-  const day = dayDiv.dataset.day;
-  let agendaData = JSON.parse(localStorage.getItem('agendaData') || '{}');
-  if (!agendaData[day]) agendaData[day] = [];
-  if (!agendaData[day].includes(topic)) {
-    agendaData[day].push(topic);
-    localStorage.setItem('agendaData', JSON.stringify(agendaData));
+const monthBtn = document.getElementById('monthBtn');
+const monthsContainer = document.getElementById('monthsContainer');
+const agenda = document.getElementById('agenda');
+
+monthBtn.addEventListener('click', () => {
+  if (monthsContainer.style.display === 'none' || monthsContainer.style.display === '') {
+    monthsContainer.style.display = 'block';
+    agenda.style.display = 'none';
+  } else {
+    monthsContainer.style.display = 'none';
+    agenda.style.display = 'grid';
   }
+});
 
-  // Se veio da lista Conteúdos Radar, remove de lá
-  const sourcePanel = event.dataTransfer.getData("source-panel");
-  if(sourcePanel === 'topicsRadar'){
-    let radarTopics = JSON.parse(localStorage.getItem('radarTopics') || '[]');
-    radarTopics = radarTopics.filter(t => t.trim() !== topic.trim());
-    localStorage.setItem('radarTopics', JSON.stringify(radarTopics));
-    renderTopicsPanelRadar();
-  }
-}
+function saveAgenda() {
+  const agendaData = {};
+  // Salvar dias da semana
+  days.forEach(day => {
+    const dayContent = document.querySelector(`.day[data-day="${day}"] .day-content`);
+    agendaData[day] = Array.from(dayContent.children)
+      .map(c => c.textContent.replace("×", "").trim());
+  });
 
-// ---------- Edit Modal ----------
-const editModalOverlay = document.getElementById('editModalOverlay');
-const checklistText = document.getElementById('checklistText');
-const modalTitleName = document.getElementById('modalTitleName');
-const saveEditBtn = document.getElementById('saveEditBtn');
-const cancelEditBtn = document.getElementById('cancelEditBtn');
-let currentEditTopic = null;
-
-function openEditModal(topic) {
-  currentEditTopic = topic;
-  modalTitleName.textContent = topic;
-  const items = radarDetails[topic] || [];
-  checklistText.value = items.join('\n');
-  editModalOverlay.style.display = 'flex';
-  checklistText.focus();
-}
-function closeEditModal() {
-  editModalOverlay.style.display = 'none';
-  currentEditTopic = null;
-}
-
-saveEditBtn.onclick = () => {
-  if(currentEditTopic === null) return;
-  const lines = checklistText.value.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
-  radarDetails[currentEditTopic] = lines;
-  localStorage.setItem('radarDetails', JSON.stringify(radarDetails));
-  closeEditModal();
-  renderRadarContent();
-};
-cancelEditBtn.onclick = () => closeEditModal();
-editModalOverlay.onclick = e => {
-  if(e.target === editModalOverlay) closeEditModal();
-};
-
-// ---------- Render Radar ----------
-function renderRadarContent() {
-  radarDetails = JSON.parse(localStorage.getItem('radarDetails') || '{}');
-  const radarData = JSON.parse(localStorage.getItem('radarData') || '{}');
-  document.querySelectorAll('#radarLevels .radar-content').forEach(div=> div.innerHTML = '');
-
-  Object.entries(radarData).forEach(([topic, level]) => {
-    const container = document.querySelector(`#radarLevels .radar-level[data-level="${level}"] .radar-content`);
-    if(!container) return;
-
-    const category = allTopics.find(t => t.text === topic)?.category || "matematica";
-
-    const block = document.createElement('div');
-    block.className = `topic-item ${category}`;
-    block.draggable = true;
-    block.textContent = topic;
-
-    // Add eye toggle
-    const eyeBtn = document.createElement('div');
-    eyeBtn.className = 'eye-toggle';
-    const eyeSvg = createEyeSvg();
-    eyeBtn.appendChild(eyeSvg);
-    eyeBtn.title = 'Clique para ocultar/mostrar';
-    eyeBtn.style.userSelect = 'none';
-    eyeBtn.style.position = 'absolute';
-    eyeBtn.style.top = '6px';
-    eyeBtn.style.right = '70px';
-    eyeBtn.style.width = '22px';
-    eyeBtn.style.height = '22px';
-    eyeBtn.style.cursor = 'pointer';
-
-    eyeBtn.onclick = (e) => {
-      e.stopPropagation();
-      if(block.classList.contains('out-of-focus')){
-        block.classList.remove('out-of-focus');
-        eyeBtn.style.opacity = '0.8';
-      }
-      else {
-        block.classList.add('out-of-focus');
-        eyeBtn.style.opacity = '0.4';
-      }
-    };
-    block.appendChild(eyeBtn);
-
-    // Div do titulo clicavel para mostrar/ocultar checklist
-    const titleRow = document.createElement('div');
-    titleRow.className = 'title-row';
-    titleRow.style.userSelect = 'none';
-    titleRow.style.cursor = 'pointer';
-    titleRow.textContent = topic;
-
-    // Checklist container
-    const checklistDiv = document.createElement('div');
-    checklistDiv.className = 'checklist';
-    checklistDiv.style.display = 'none'; // start hidden
-
-    const checklistItems = radarDetails[topic] || [];
-    if (checklistItems.length > 0) {
-      checklistItems.forEach((item, index) => {
-        const label = document.createElement('label');
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.dataset.topic = topic;
-        checkbox.dataset.index = index;
-        checkbox.checked = false; // always start unchecked
-        const span = document.createElement('span');
-        span.textContent = item;
-        label.appendChild(checkbox);
-        label.appendChild(span);
-        checklistDiv.appendChild(label);
+  // Salvar meses com checkbox states
+  const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+  months.forEach(month => {
+    const monthContent = Array.from(document.querySelectorAll('.month')).find(m => m.dataset.month === month);
+    if (monthContent) {
+      const contentDiv = monthContent.querySelector('.month-content');
+      agendaData[month] = Array.from(contentDiv.children).map(child => {
+        const checkbox = child.querySelector("input.month-check");
+        let text = "";
+        let done = false;
+        if (checkbox) {
+          text = child.querySelector("span").textContent;
+          done = checkbox.checked;
+        } else {
+          text = child.textContent.replace("×", "").trim();
+        }
+        return { text, done };
       });
     }
+  });
 
-    // Toggle checklist visibility on title click
-    titleRow.onclick = () => {
-      checklistDiv.style.display = checklistDiv.style.display === 'none' ? 'block' : 'none';
-    };
+  localStorage.setItem('agendaData', JSON.stringify(agendaData));
+  alert('Agenda salva com sucesso!');
+}
 
-    block.appendChild(titleRow);
+function loadAgenda() {
+  const agendaData = JSON.parse(localStorage.getItem('agendaData') || '{}');
 
-    const editBtn = document.createElement('span');
-    editBtn.className = 'edit-btn';
-    editBtn.innerHTML = '✏️';
-    editBtn.title = 'Editar checklist';
-    editBtn.onclick = (e) => {
-      e.stopPropagation();
-      openEditModal(topic);
-    };
-    block.appendChild(editBtn);
+  // Carregar dias da semana
+  days.forEach(day => {
+    const dayContent = document.querySelector(`.day[data-day="${day}"] .day-content`);
+    dayContent.innerHTML = '';
+    if (agendaData[day]) {
+      agendaData[day].forEach(topic => {
+        let category = '';
+        for (const ctp of allTopics) {
+          if (ctp.text === topic) {
+            category = ctp.category;
+            break;
+          }
+        }
+        if (!category) category = "matematica";
 
-    const removeBtn = document.createElement('span');
-    removeBtn.className = 'remove-btn';
-    removeBtn.textContent = '×';
-    removeBtn.title = 'Remover do Radar';
-    removeBtn.onclick = e => {
-      e.stopPropagation();
+        const newTopic = document.createElement("div");
+        newTopic.className = `topic-item ${category}`;
+        newTopic.textContent = topic;
 
-      let radarDataObj = JSON.parse(localStorage.getItem('radarData') || '{}');
-      delete radarDataObj[topic];
-      localStorage.setItem('radarData', JSON.stringify(radarDataObj));
+        const removeBtn = document.createElement("span");
+        removeBtn.textContent = "×";
+        removeBtn.title = "Remover";
+        removeBtn.className = "remove-btn";
+        removeBtn.onclick = () => {
+          newTopic.remove();
+        };
 
-      if(radarDetails[topic]){
-        delete radarDetails[topic];
-        localStorage.setItem('radarDetails', JSON.stringify(radarDetails));
-      }
+        newTopic.appendChild(removeBtn);
+        dayContent.appendChild(newTopic);
+      });
+    }
+  });
 
-      let radarTopics = JSON.parse(localStorage.getItem('radarTopics') || '[]');
-
-      // Return content to radar list
-      if(!radarTopics.includes(topic)) {
-        const category = allTopics.find(t => t.text === topic)?.category || "matematica";
-        const catList = initialRadarOrder[category] || [];
-        let insertIndex = radarTopics.length;
-        for(let i=0;i<radarTopics.length;i++){
-          const t = radarTopics[i];
-          const tCat = allTopics.find(x => x.text === t)?.category;
-          if(tCat === category){
-            const tPos = catList.indexOf(t);
-            const topicPos = catList.indexOf(topic);
-            if(tPos >= 0 && topicPos >= 0 && tPos > topicPos){
-              insertIndex = i;
+  // Carregar meses com checkbox e aplicar classe checked
+  const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+  months.forEach(month => {
+    const monthContent = Array.from(document.querySelectorAll('.month')).find(m => m.dataset.month === month);
+    if (monthContent) {
+      const contentDiv = monthContent.querySelector('.month-content');
+      contentDiv.innerHTML = '';
+      if (agendaData[month]) {
+        agendaData[month].forEach(({text, done}) => {
+          let category = '';
+          for (const ctp of allTopics) {
+            if (ctp.text === text) {
+              category = ctp.category;
               break;
             }
           }
-        }
-        radarTopics.splice(insertIndex, 0, topic);
-      }
-      localStorage.setItem('radarTopics', JSON.stringify(radarTopics));
+          if (!category) category = "matematica";
 
-      renderRadarContent();
-      renderTopicsPanelRadar();
-    };
-    block.appendChild(removeBtn);
+          const newTopic = document.createElement("div");
+          newTopic.className = `topic-item ${category}`;
 
-    block.addEventListener('dragstart', dragStart);
-    container.appendChild(block);
-  });
-}
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.className = "month-check";
+          checkbox.title = "Marcar como concluído";
+          checkbox.checked = !!done;
 
-// ---------- Limpar Radar ----------
-document.getElementById('radarClearBtn').onclick = () => {
-  if(confirm('Tem certeza que deseja limpar todos os dados do Radar?')){
-    localStorage.removeItem('radarData');
-    localStorage.removeItem('radarDetails');
-    localStorage.removeItem('agendaData');
-    radarDetails = {};
-    let allTexts = allTopics.map(t=>t.text);
-    localStorage.setItem('radarTopics', JSON.stringify(allTexts));
-    updateInitialRadarOrder();
-    renderRadarContent();
-    renderTopicsPanelRadar();
-    renderAgendaContent();
-    alert("Radar e agenda limpos. Use carregar para recuperar último salvamento.");
-  }
-}
+          const spanText = document.createElement("span");
+          spanText.textContent = text;
 
-// Renderizar agenda
-function renderAgendaContent() {
-  const agendaData = JSON.parse(localStorage.getItem('agendaData') || '{}');
-  days.forEach(day => {
-    const dayDiv = document.querySelector(`.day[data-day="${day}"]`);
-    if(dayDiv){
-      const contentDiv = dayDiv.querySelector('.day-content');
-      if(contentDiv){
-        contentDiv.innerHTML = '';
-        if(agendaData[day]){
-          agendaData[day].forEach(topic => {
-            const category = allTopics.find(t => t.text === topic)?.category || 'matematica';
-            const div = document.createElement('div');
-            div.className = `topic-item ${category}`;
-            div.textContent = topic;
-            div.draggable = true;
-            div.addEventListener('dragstart', dragStart);
-            const removeBtn = document.createElement('span');
-            removeBtn.textContent = '×';
-            removeBtn.title = 'Remover';
-            removeBtn.className = 'remove-btn';
-            removeBtn.onclick = () => {
-              div.remove();
-              let agendaData = JSON.parse(localStorage.getItem('agendaData') || '{}');
-              if(agendaData[day]){
-                agendaData[day] = agendaData[day].filter(t=>t!==topic);
-                localStorage.setItem('agendaData', JSON.stringify(agendaData));
-              }
-            };
-            div.appendChild(removeBtn);
-            contentDiv.appendChild(div);
+          newTopic.appendChild(checkbox);
+          newTopic.appendChild(spanText);
+
+          if(done) newTopic.classList.add('checked');
+
+          // Atualiza estilo ao clicar checkbox
+          checkbox.addEventListener('change', () => {
+            if(checkbox.checked) {
+              newTopic.classList.add('checked');
+            } else {
+              newTopic.classList.remove('checked');
+            }
           });
-        }
-      }
-    }
-  });
-}
 
-// Salvar e carregar radar e agenda completos
-function saveEverything() {
-  // Save radar topics (those in panel)
-  let radarTopics = [];
-  document.querySelectorAll('#topicsRadar .topic-item').forEach(item => {
-    radarTopics.push(item.textContent);
-  });
-  localStorage.setItem('radarTopics', JSON.stringify(radarTopics));
+          const removeBtn = document.createElement("span");
+          removeBtn.textContent = "×";
+          removeBtn.title = "Remover";
+          removeBtn.className = "remove-btn";
+          removeBtn.onclick = () => {
+            newTopic.remove();
+          };
 
-  // Save radarData (topic => level)
-  const radarData = {};
-  document.querySelectorAll('#radarLevels .radar-level').forEach(levelDiv => {
-    const level = levelDiv.dataset.level;
-    levelDiv.querySelectorAll('.topic-item').forEach(item => {
-      radarData[item.textContent.replace(/[×✏️]/g, '').trim()] = parseInt(level);
-    });
-  });
-  localStorage.setItem('radarData', JSON.stringify(radarData));
-
-  // Save radarDetails
-  localStorage.setItem('radarDetails', JSON.stringify(radarDetails));
-
-  // Save agendaData
-  let agendaData = {};
-  days.forEach(day => {
-    const dayDiv = document.querySelector(`.day[data-day="${day}"]`);
-    const items = [];
-    if(dayDiv){
-      const contentDiv = dayDiv.querySelector('.day-content');
-      if(contentDiv){
-        contentDiv.querySelectorAll('.topic-item').forEach(item => {
-          items.push(item.textContent.replace(/[×✏️]/g,'').trim());
+          newTopic.appendChild(removeBtn);
+          contentDiv.appendChild(newTopic);
         });
       }
     }
-    agendaData[day] = items;
   });
-  localStorage.setItem('agendaData', JSON.stringify(agendaData));
-
-  // Save full backup snapshot to 'lastSavedState'
-  const backup = {
-    radarTopics,
-    radarData,
-    radarDetails,
-    agendaData
-  };
-  localStorage.setItem('lastSavedState', JSON.stringify(backup));
 }
 
-// Carregar o snapshot salvo inteiro
-function loadEverything() {
-  const backupRaw = localStorage.getItem('lastSavedState');
-  if(!backupRaw){
-    alert("Nenhum salvamento encontrado.");
-    return;
-  }
-  try {
-    const backup = JSON.parse(backupRaw);
-    if(!backup) {
-      alert("Salvamento corrompido ou vazio.");
-      return;
-    }
-    localStorage.setItem('radarTopics', JSON.stringify(backup.radarTopics || []));
-    localStorage.setItem('radarData', JSON.stringify(backup.radarData || {}));
-    localStorage.setItem('radarDetails', JSON.stringify(backup.radarDetails || {}));
-    localStorage.setItem('agendaData', JSON.stringify(backup.agendaData || {}));
-    radarDetails = backup.radarDetails || {};
-    updateInitialRadarOrder();
-    renderRadarContent();
-    renderTopicsPanelRadar();
-    renderAgendaContent();
-    alert("Último salvamento carregado com sucesso.");
-  }
-  catch(e) {
-    alert("Erro ao carregar o salvamento.");
-  }
-}
-
-// Exibir a aba selecionada
-function showOnly(aba){
-  agendaDiv.style.display = 'none';
-  document.getElementById('radarContainer').style.display = 'none';
-  Object.values(topicsPanels).forEach(panel => panel.classList.remove('active'));
-  if(aba === 'radar'){
-    document.getElementById('radarContainer').style.display = 'flex';
-    topicsPanels.radar.classList.add('active');
-  }
-  else {
-    agendaDiv.style.display = 'grid';
-  }
-}
-
-// ----------- Toggle esconder conteúdos radar -------------
-const toggleRadarContentsBtn = document.createElement('button');
-toggleRadarContentsBtn.id = 'toggleRadarContentsBtn';
-toggleRadarContentsBtn.title = 'Mostrar/Ocultar Conteúdos Radar';
-toggleRadarContentsBtn.textContent = '⬆️';
-
-let radarContentsVisible = true;
-
-toggleRadarContentsBtn.onclick = () => {
-  radarContentsVisible = !radarContentsVisible;
-  topicsPanels.radar.querySelectorAll('.topic-item').forEach(item => {
-    item.style.display = radarContentsVisible ? '' : 'none';
-  });
-  toggleRadarContentsBtn.textContent = radarContentsVisible ? '⬆️' : '⬇️';
-  toggleRadarContentsBtn.title = radarContentsVisible ? 'Ocultar Conteúdos Radar' : 'Mostrar Conteúdos Radar';
-};
-
-// --- Inicializar página ---
-window.addEventListener('load', () => {
-  let savedRadarTopics = JSON.parse(localStorage.getItem('radarTopics') || '[]');
-  const allTopicTexts = allTopics.map(t => t.text);
-  const mergedTopics = [...new Set([...savedRadarTopics, ...allTopicTexts])];
-  localStorage.setItem('radarTopics', JSON.stringify(mergedTopics));
-  radarDetails = JSON.parse(localStorage.getItem('radarDetails') || '{}');
-  updateInitialRadarOrder();
-  showOnly('radar'); // inicia no radar
-  renderAgendaContent();
-  renderTopicsPanelRadar();
-
-  // Adiciona listeners de dragover, dragleave e drop para os contêineres dos níveis para reordenação
-  document.querySelectorAll('.radar-content').forEach(container => {
-    container.addEventListener('dragover', dragOverRadar);
-    container.addEventListener('dragleave', dragLeaveRadar);
-    container.addEventListener('drop', drop);
-  });
-});
+document.getElementById('saveBtn').addEventListener('click', saveAgenda);
+document.getElementById('loadBtn').addEventListener('click', loadAgenda);
 </script>
 </body>
 </html>
