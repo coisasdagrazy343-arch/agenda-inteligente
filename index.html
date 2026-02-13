@@ -158,9 +158,15 @@
 <body>
   <h1>Agendinha de Estudos - Arraste os conteúdos para os dias da semana ou para os meses</h1>
 
-  <button id="saveBtn" aria-label="Salvar agenda">Salvar Agenda</button>
-  <button id="loadBtn" aria-label="Carregar agenda">Carregar Agenda</button>
-  <button id="monthBtn" aria-label="Alternar visualização por mês">Organizar por Mês</button>
+  <!-- Botões semana -->
+  <button id="saveWeekBtn" aria-label="Salvar agenda semanal">Salvar Semana</button>
+  <button id="loadWeekBtn" aria-label="Carregar agenda semanal">Carregar Semana</button>
+
+  <!-- Botões mês, inicialmente escondidos -->
+  <button id="saveMonthBtn" aria-label="Salvar agenda mensal" style="display:none">Salvar Mês</button>
+  <button id="loadMonthBtn" aria-label="Carregar agenda mensal" style="display:none">Carregar Mês</button>
+
+  <button id="monthBtn" aria-label="Alternar visualização">Organizar por Mês</button>
 
   <div id="container">
     <div id="topics" aria-label="Lista de conteúdos para estudo">
@@ -174,7 +180,6 @@
     <div id="monthsContainer" role="list" aria-label="Agenda mensal">
       <h3>Organize seus conteúdos por mês</h3>
       <div id="monthsGrid">
-        <!-- meses inseridos dinamicamente ou já no HTML -->
         <div class="month" data-month="Janeiro" ondrop="drop(event)" ondragover="allowDrop(event)">
           <h4>Janeiro</h4>
           <div class="month-content"></div>
@@ -227,7 +232,6 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
   <script>
     // Array dos dias da semana
     const days = [
@@ -240,13 +244,15 @@
       "Domingo"
     ];
 
-    // Categorias e conteúdos
+    // Categorias e conteúdos (mantidos iguais ao seu código)
     const mathTopics = [
       "Números e suas operações básicas",
+      "Sistemas de Numeração Decimal",
       "Habilidades mentais básicas",
       "Frações e suas propriedades",
       "MMC, MDC e Fatoração",
       "Potenciação e radiciação",
+      "Notação Científica",
       "Razão e Proporção",
       "Porcentagem",
       "Unidades de Medida",
@@ -266,7 +272,9 @@
       "Logaritmos",
       "Matemática financeira",
       "Equações",
-      "Sistemas de equações"
+      "Sistemas de equações",
+      "Produtos Notáveis",
+      "Fatoração de Expressões Algébricas"
     ].map(t => ({ text: t, category: "matematica" }));
 
     const bioTopics = [
@@ -276,7 +284,7 @@
       "Ciclo Menstrual", "Sistema nervoso", "Sistema digestório",
       "Sistema cardiorrespiratório", "Sistema Imunológico", "Botânica",
       "Zoologia", "Microbiologia", "Histologia", "Sangue", "Doenças", "Drogas",
-      "Taxonomia e Classificação dos Seres Vivos", "Reprodução Humana", "Embriologia"
+      "Taxonomia e Classificação dos Seres Vivos", "Reprodução Humana", "Embriologia", "Sistema endócrino", "Sistema excretor"
     ].map(t => ({ text: t, category: "biologia" }));
 
     const chemistryTopics = [
@@ -341,6 +349,11 @@
     const monthsContainer = document.getElementById('monthsContainer');
     const monthBtn = document.getElementById('monthBtn');
 
+    const saveWeekBtn = document.getElementById('saveWeekBtn');
+    const loadWeekBtn = document.getElementById('loadWeekBtn');
+    const saveMonthBtn = document.getElementById('saveMonthBtn');
+    const loadMonthBtn = document.getElementById('loadMonthBtn');
+
     // Renderiza lista de conteúdos
     allTopics.forEach(({ text, category }) => {
       const div = document.createElement("div");
@@ -360,6 +373,7 @@
       agendaDiv.appendChild(dayDiv);
     });
 
+    // Funções drag & drop
     function dragStart(event) {
       event.dataTransfer.setData("text/plain", event.target.textContent);
       event.dataTransfer.effectAllowed = "copy";
@@ -374,7 +388,6 @@
       event.preventDefault();
       const topic = event.dataTransfer.getData("text/plain");
       if (!topic) return;
-
       let container = event.currentTarget;
       if (!container.classList.contains("day-content") && !container.classList.contains("month-content")) {
         container = container.querySelector(".day-content") || container.querySelector(".month-content") || container;
@@ -428,86 +441,72 @@
       container.appendChild(newTopic);
     }
 
-    monthBtn.addEventListener('click', () => {
-      if (monthsContainer.style.display === 'none' || monthsContainer.style.display === '') {
-        monthsContainer.style.display = 'block';
-        agendaDiv.style.display = 'none';
-      } else {
-        monthsContainer.style.display = 'none';
-        agendaDiv.style.display = 'grid';
-      }
-    });
-
-    function saveAgenda() {
-      const agendaData = {};
-
-      // Salvar dias da semana
+    // Funções salvar/carregar semana
+    function saveWeek() {
+      const weekData = {};
       days.forEach(day => {
         const dayContent = document.querySelector(`.day[data-day="${day}"] .day-content`);
-        agendaData[day] = Array.from(dayContent.children).map(c => c.textContent.replace("×", "").trim());
+        weekData[day] = Array.from(dayContent.children).map(c => c.textContent.replace("×", "").trim());
       });
-
-      // Salvar meses com checkbox states
-      const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-      months.forEach(month => {
-        const monthElement = Array.from(document.querySelectorAll('.month')).find(m => m.dataset.month === month);
-        if (monthElement) {
-          const contentDiv = monthElement.querySelector('.month-content');
-          agendaData[month] = Array.from(contentDiv.children).map(child => {
-            const checkbox = child.querySelector("input.month-check");
-            if (checkbox) {
-              return {
-                text: child.querySelector("span").textContent,
-                done: checkbox.checked
-              };
-            }
-            return { text: child.textContent.replace("×", "").trim(), done: false };
-          });
-        }
-      });
-
-      localStorage.setItem('agendaData', JSON.stringify(agendaData));
-      alert('Agenda salva com sucesso!');
+      localStorage.setItem('agendaWeekData', JSON.stringify(weekData));
+      alert('Agenda semanal salva com sucesso!');
     }
 
-    function loadAgenda() {
-      const agendaData = JSON.parse(localStorage.getItem('agendaData') || '{}');
-
-      // Carregar dias da semana
+    function loadWeek() {
+      const weekData = JSON.parse(localStorage.getItem('agendaWeekData') || '{}');
       days.forEach(day => {
         const dayContent = document.querySelector(`.day[data-day="${day}"] .day-content`);
         dayContent.innerHTML = '';
-        if (agendaData[day]) {
-          agendaData[day].forEach(topic => {
-            let category = allTopics.find(t => t.text === topic)?.category || "matematica";
-
+        if (weekData[day]) {
+          weekData[day].forEach(topic => {
+            const category = allTopics.find(t => t.text === topic)?.category || "matematica";
             const newTopic = document.createElement("div");
             newTopic.className = `topic-item ${category}`;
             newTopic.textContent = topic;
-
             const removeBtn = document.createElement("span");
             removeBtn.textContent = "×";
             removeBtn.title = "Remover";
             removeBtn.className = "remove-btn";
             removeBtn.onclick = () => newTopic.remove();
-
             newTopic.appendChild(removeBtn);
             dayContent.appendChild(newTopic);
           });
         }
       });
+    }
 
-      // Carregar meses com checkbox e aplicar classe checked
+    // Funções salvar/carregar mês
+    function saveMonth() {
+      const monthData = {};
+      const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+      months.forEach(month => {
+        const monthElement = Array.from(document.querySelectorAll('.month')).find(m => m.dataset.month === month);
+        if (monthElement) {
+          const contentDiv = monthElement.querySelector('.month-content');
+          monthData[month] = Array.from(contentDiv.children).map(child => {
+            const checkbox = child.querySelector("input.month-check");
+            return {
+              text: child.querySelector("span")?.textContent || child.textContent.replace("×", "").trim(),
+              done: checkbox ? checkbox.checked : false
+            };
+          });
+        }
+      });
+      localStorage.setItem('agendaMonthData', JSON.stringify(monthData));
+      alert('Agenda mensal salva com sucesso!');
+    }
+
+    function loadMonth() {
+      const monthData = JSON.parse(localStorage.getItem('agendaMonthData') || '{}');
       const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
       months.forEach(month => {
         const monthElement = Array.from(document.querySelectorAll('.month')).find(m => m.dataset.month === month);
         if (monthElement) {
           const contentDiv = monthElement.querySelector('.month-content');
           contentDiv.innerHTML = '';
-          if (agendaData[month]) {
-            agendaData[month].forEach(({ text, done }) => {
-              let category = allTopics.find(t => t.text === text)?.category || "matematica";
-
+          if (monthData[month]) {
+            monthData[month].forEach(({ text, done }) => {
+              const category = allTopics.find(t => t.text === text)?.category || "matematica";
               const newTopic = document.createElement("div");
               newTopic.className = `topic-item ${category}`;
 
@@ -515,23 +514,14 @@
               checkbox.type = "checkbox";
               checkbox.className = "month-check";
               checkbox.title = "Marcar como concluído";
-              checkbox.checked = !!done;
+              checkbox.checked = done;
+
+              checkbox.addEventListener('change', () => {
+                newTopic.classList.toggle('checked', checkbox.checked);
+              });
 
               const spanText = document.createElement("span");
               spanText.textContent = text;
-
-              newTopic.appendChild(checkbox);
-              newTopic.appendChild(spanText);
-
-              if (done) newTopic.classList.add('checked');
-
-              checkbox.addEventListener('change', () => {
-                if (checkbox.checked) {
-                  newTopic.classList.add('checked');
-                } else {
-                  newTopic.classList.remove('checked');
-                }
-              });
 
               const removeBtn = document.createElement("span");
               removeBtn.textContent = "×";
@@ -539,6 +529,10 @@
               removeBtn.className = "remove-btn";
               removeBtn.onclick = () => newTopic.remove();
 
+              if (done) newTopic.classList.add('checked');
+
+              newTopic.appendChild(checkbox);
+              newTopic.appendChild(spanText);
               newTopic.appendChild(removeBtn);
               contentDiv.appendChild(newTopic);
             });
@@ -547,9 +541,49 @@
       });
     }
 
-    document.getElementById('saveBtn').addEventListener('click', saveAgenda);
-    document.getElementById('loadBtn').addEventListener('click', loadAgenda);
+    // Mostrar visualizações e botões adequados
+    function showWeekView() {
+      monthsContainer.style.display = 'none';
+      agendaDiv.style.display = 'grid';
+      saveWeekBtn.style.display = '';
+      loadWeekBtn.style.display = '';
+      saveMonthBtn.style.display = 'none';
+      loadMonthBtn.style.display = 'none';
+      monthBtn.textContent = "Organizar por Mês";
+      monthBtn.setAttribute('aria-label', 'Alternar visualização para mês');
+    }
 
+    function showMonthView() {
+      monthsContainer.style.display = 'block';
+      agendaDiv.style.display = 'none';
+      saveWeekBtn.style.display = 'none';
+      loadWeekBtn.style.display = 'none';
+      saveMonthBtn.style.display = '';
+      loadMonthBtn.style.display = '';
+      monthBtn.textContent = "Organizar por Semana";
+      monthBtn.setAttribute('aria-label', 'Alternar visualização para semana');
+    }
+
+    // Botão alternar visualização
+    monthBtn.addEventListener('click', () => {
+      if (monthsContainer.style.display === 'none' || monthsContainer.style.display === '') {
+        showMonthView();
+        loadMonth();
+      } else {
+        showWeekView();
+        loadWeek();
+      }
+    });
+
+    // Botões salvar e carregar
+    saveWeekBtn.addEventListener('click', saveWeek);
+    loadWeekBtn.addEventListener('click', loadWeek);
+    saveMonthBtn.addEventListener('click', saveMonth);
+    loadMonthBtn.addEventListener('click', loadMonth);
+
+    // Inicializa página com semana e carrega dados salvos
+    showWeekView();
+    loadWeek();
   </script>
 </body>
 </html>
